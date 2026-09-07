@@ -58,8 +58,8 @@ export default function Home() {
       <header className="home-header" style={{ padding: '16px 35px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 50, background: '#ffffff', borderBottom: '2px solid #e7dfd5' }}>
         <div className="brand-group" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <div className="brand-logos" aria-label="شعار وزارة التعليم وشعار روضة آل مشول">
-            <img src="/شعار.jpg" alt="شعار وزارة التعليم" className="brand-logo ministry-logo" />
-            <img src="/شعار-الروضة.svg" alt="شعار روضة آل مشول" className="brand-logo school-logo" />
+            <img src="/ministry-logo.jpg" alt="شعار وزارة التعليم" className="brand-logo ministry-logo" />
+            <img src="/school-logo.svg" alt="شعار روضة آل مشول" className="brand-logo school-logo" />
           </div>
           <div className="brand-copy">
             <span className="ministry-label">وزارة التعليم</span>
