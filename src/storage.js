@@ -1,5 +1,8 @@
 const DB_NAME = 'kindergarten-archive-db';
 const STORE_NAME = 'files';
+const BUCKET_NAME = 'archive-files';
+
+import { isRemoteStorageConfigured, supabase } from './supabase';
 
 const openDatabase = () => new Promise((resolve, reject) => {
   const request = indexedDB.open(DB_NAME, 1);
@@ -26,6 +29,15 @@ const runTransaction = async (mode, callback) => {
 };
 
 export const getFiles = async (sectionId) => {
+  if (isRemoteStorageConfigured) {
+    const { data, error } = await supabase
+      .from('archive_files')
+      .select('*')
+      .eq('section_id', String(sectionId))
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return hydrateRemoteFiles(data);
+  }
   const files = await runTransaction('readonly', (store) =>
     store.index('sectionId').getAll(String(sectionId))
   );
@@ -33,13 +45,39 @@ export const getFiles = async (sectionId) => {
 };
 
 export const getAllFiles = async () => {
+  if (isRemoteStorageConfigured) {
+    const { data, error } = await supabase
+      .from('archive_files')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return hydrateRemoteFiles(data);
+  }
   const files = await runTransaction('readonly', (store) => store.getAll());
   return files.sort((first, second) => second.createdAt - first.createdAt);
 };
 
-export const saveFile = (file) => runTransaction('readwrite', (store) => store.put(file));
-export const updateFile = (file) => runTransaction('readwrite', (store) => store.put(file));
-export const deleteFile = (id) => runTransaction('readwrite', (store) => store.delete(id));
+export const saveFile = async (file) => {
+  if (!isRemoteStorageConfigured) return runTransaction('readwrite', (store) => store.put(file));
+  const { error: uploadError } = await supabase.storage.from(BUCKET_NAME).upload(file.storagePath, file.blob, { upsert: true, contentType: file.type });
+  if (uploadError) throw uploadError;
+  const { error } = await supabase.from('archive_files').insert(toRemoteRecord(file));
+  if (error) throw error;
+};
+
+export const updateFile = async (file) => {
+  if (!isRemoteStorageConfigured) return runTransaction('readwrite', (store) => store.put(file));
+  const { error } = await supabase.from('archive_files').update({ name: file.name, description: file.description }).eq('id', file.id);
+  if (error) throw error;
+};
+
+export const deleteFile = async (id) => {
+  if (!isRemoteStorageConfigured) return runTransaction('readwrite', (store) => store.delete(id));
+  const { data } = await supabase.from('archive_files').select('storage_path').eq('id', id).single();
+  if (data?.storage_path) await supabase.storage.from(BUCKET_NAME).remove([data.storage_path]);
+  const { error } = await supabase.from('archive_files').delete().eq('id', id);
+  if (error) throw error;
+};
 
 export const makeFileRecord = (file, sectionId, description = '') => ({
   id: `${Date.now()}-${crypto.randomUUID()}`,
@@ -51,4 +89,29 @@ export const makeFileRecord = (file, sectionId, description = '') => ({
   date: new Date().toISOString().split('T')[0],
   createdAt: Date.now(),
   blob: file,
+  storagePath: `${sectionId}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`,
 });
+
+const toRemoteRecord = (file) => ({
+  id: file.id,
+  section_id: file.sectionId,
+  name: file.name,
+  description: file.description,
+  size: file.size,
+  type: file.type,
+  date: file.date,
+  created_at: file.createdAt,
+  storage_path: file.storagePath,
+});
+
+const hydrateRemoteFiles = async (records) => Promise.all(records.map(async (record) => {
+  const { data, error } = await supabase.storage.from(BUCKET_NAME).download(record.storage_path);
+  if (error) throw error;
+  return {
+    ...record,
+    sectionId: record.section_id,
+    createdAt: record.created_at,
+    storagePath: record.storage_path,
+    blob: data,
+  };
+}));
