@@ -14,6 +14,8 @@ export default function Admin() {
   const [allFiles, setAllFiles] = useState([]);
   const [notice, setNotice] = useState('');
   const [selectedIds, setSelectedIds] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
 
   useEffect(() => {
     getAllFiles()
@@ -43,6 +45,7 @@ export default function Admin() {
       return;
     }
 
+    setIsUploading(true);
     try {
       const newFile = makeFileRecord(selectedFile, selectedSection, description.trim());
       await saveFile(newFile);
@@ -54,14 +57,20 @@ export default function Admin() {
       setNotice(`تم رفع الملف «${newFile.name}» بنجاح.`);
     } catch {
       setNotice('تعذر حفظ الملف. قد تكون مساحة تخزين المتصفح ممتلئة.');
+    } finally {
+      setIsUploading(false);
     }
   };
 
   const handleDelete = async (file) => {
     if (window.confirm('هل أنت متأكد من حذف هذا المستند نهائياً؟')) {
-      await deleteFile(file.id);
-      setAllFiles((files) => files.filter((item) => item.id !== file.id));
-      setNotice('تم حذف المستند.');
+      try {
+        await deleteFile(file.id);
+        setAllFiles((files) => files.filter((item) => item.id !== file.id));
+        setNotice('تم حذف المستند.');
+      } catch {
+        setNotice('تعذر حذف المستند. حاول مرة أخرى.');
+      }
     }
   };
 
@@ -70,17 +79,25 @@ export default function Admin() {
     if (!name?.trim()) return;
     const nextDescription = window.prompt('وصف الملف:', file.description || '') ?? (file.description || '');
     const updatedFile = { ...file, name: name.trim(), description: nextDescription.trim() };
-    await updateFile(updatedFile);
-    setAllFiles((files) => files.map((item) => item.id === file.id ? updatedFile : item));
-    setNotice('تم تحديث بيانات المستند.');
+    try {
+      await updateFile(updatedFile);
+      setAllFiles((files) => files.map((item) => item.id === file.id ? updatedFile : item));
+      setNotice('تم تحديث بيانات المستند.');
+    } catch {
+      setNotice('تعذر تحديث بيانات المستند.');
+    }
   };
 
   const handleBulkDelete = async () => {
     if (!selectedIds.length || !window.confirm('هل تريد حذف المستندات المحددة؟')) return;
-    await Promise.all(selectedIds.map((id) => deleteFile(id)));
-    setAllFiles((files) => files.filter((file) => !selectedIds.includes(file.id)));
-    setSelectedIds([]);
-    setNotice('تم حذف المستندات المحددة.');
+    try {
+      await Promise.all(selectedIds.map((id) => deleteFile(id)));
+      setAllFiles((files) => files.filter((file) => !selectedIds.includes(file.id)));
+      setSelectedIds([]);
+      setNotice('تم حذف المستندات المحددة.');
+    } catch {
+      setNotice('تعذر حذف بعض المستندات المحددة.');
+    }
   };
 
   const handleBackup = async () => {
@@ -91,6 +108,10 @@ export default function Admin() {
           const reader = new FileReader();
           reader.onload = () => resolve(reader.result);
           reader.onerror = () => reject(reader.error);
+          if (!file.blob) {
+            reject(new Error('Missing file data'));
+            return;
+          }
           reader.readAsDataURL(file.blob);
         }),
       })));
@@ -110,6 +131,7 @@ export default function Admin() {
   const handleRestore = async (event) => {
     const backupFile = event.target.files?.[0];
     if (!backupFile) return;
+    setIsRestoring(true);
     try {
       const backup = JSON.parse(await backupFile.text());
       if (!Array.isArray(backup.files)) throw new Error('Invalid backup');
@@ -125,6 +147,8 @@ export default function Admin() {
       setNotice(`تم استرجاع ${restoredFiles.length} ملف بنجاح.`);
     } catch {
       setNotice('ملف النسخة الاحتياطية غير صالح.');
+    } finally {
+      setIsRestoring(false);
     }
     event.target.value = '';
   };
@@ -233,10 +257,13 @@ export default function Admin() {
               <input 
                 id="file-upload-input"
                 type="file" 
+                accept="*/*"
+                disabled={isUploading}
                 onChange={(e) => setSelectedFile(e.target.files[0])}
                 style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px dashed #94a3b8', background: '#f8fafc', cursor: 'pointer', fontSize: '13px', fontFamily: 'inherit' }}
               />
-              <span style={{ fontSize: '11px', color: '#64748b', marginTop: '6px', display: 'block', fontWeight: '600' }}>يدعم رفع ملفات PDF، Word، Excel، والصور بجميع أنواعها.</span>
+                <span style={{ fontSize: '11px', color: '#64748b', marginTop: '6px', display: 'block', fontWeight: '600' }}>يمكنك اختيار أي نوع ملف وبأي حجم تسمح به مساحة جهازك.</span>
+                {selectedFile && <div role="status" style={{ background: '#eff6ff', color: '#1d4ed8', padding: '10px 12px', borderRadius: '9px', marginTop: '10px', fontSize: '12px', fontWeight: '700' }}>الملف المحدد: {selectedFile.name} ({(selectedFile.size / (1024 * 1024)).toFixed(2)} ميجابايت)</div>}
             </div>
 
             <div>
@@ -246,10 +273,11 @@ export default function Admin() {
 
             <button 
               type="submit" 
+              disabled={isUploading}
               style={{ background: '#059669', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '12px', fontWeight: '800', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(5,150,105,0.2)' }}
             >
               <Upload style={{ width: '16px', height: '16px' }} />
-              <span>رفع الملف وتحديث السجل</span>
+              <span>{isUploading ? 'جارٍ حفظ الملف...' : 'رفع الملف وتحديث السجل'}</span>
             </button>
           </form>
         </div>
@@ -266,7 +294,7 @@ export default function Admin() {
             <span style={{ background: '#ecfdf5', color: '#047857', padding: '8px 12px', borderRadius: '9px', fontSize: '12px', fontWeight: '800' }}>الأقسام المستخدمة: {new Set(allFiles.map((file) => file.sectionId)).size}</span>
             <button type="button" onClick={handleBulkDelete} disabled={!selectedIds.length} style={{ background: selectedIds.length ? '#fee2e2' : '#f1f5f9', color: selectedIds.length ? '#dc2626' : '#94a3b8', border: 'none', padding: '8px 12px', borderRadius: '9px', fontSize: '12px', fontWeight: '800', cursor: selectedIds.length ? 'pointer' : 'not-allowed' }}>حذف المحدد ({selectedIds.length})</button>
             <button type="button" onClick={handleBackup} style={{ background: '#fef3c7', color: '#92400e', border: 'none', padding: '8px 12px', borderRadius: '9px', fontSize: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}><Download size={14} /> تنزيل نسخة احتياطية</button>
-            <label style={{ background: '#e0f2fe', color: '#0369a1', border: 'none', padding: '8px 12px', borderRadius: '9px', fontSize: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}><Database size={14} /> استرجاع نسخة<input type="file" accept="application/json,.json" onChange={handleRestore} style={{ display: 'none' }} /></label>
+            <label style={{ background: isRestoring ? '#f1f5f9' : '#e0f2fe', color: isRestoring ? '#94a3b8' : '#0369a1', border: 'none', padding: '8px 12px', borderRadius: '9px', fontSize: '12px', fontWeight: '800', cursor: isRestoring ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}><Database size={14} /> {isRestoring ? 'جارٍ الاسترجاع...' : 'استرجاع نسخة'}<input type="file" accept="application/json,.json" onChange={handleRestore} disabled={isRestoring} style={{ display: 'none' }} /></label>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
