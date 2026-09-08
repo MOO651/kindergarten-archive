@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Upload, Trash2, Lock, FileText, ShieldCheck, Download, Database } from 'lucide-react';
+import imageCompression from 'browser-image-compression';
 import { deleteFile, downloadFile, getAllFiles, makeFileRecord, saveFile, updateFile } from '../storage';
 
 const fileToDataUrl = async (file) => new Promise((resolve, reject) => {
@@ -54,14 +55,27 @@ export default function Admin() {
 
     setIsUploading(true);
     try {
-      const newFile = makeFileRecord(selectedFile, selectedSection, description.trim());
+      const originalSize = selectedFile.size;
+      const uploadFile = selectedFile.type.startsWith('image/')
+        ? await imageCompression(selectedFile, {
+          maxSizeMB: 1.5,
+          maxWidthOrHeight: 2400,
+          initialQuality: 0.78,
+          useWebWorker: true,
+        })
+        : selectedFile;
+      const newFile = makeFileRecord(uploadFile, selectedSection, description.trim());
       await saveFile(newFile);
       setAllFiles((files) => [newFile, ...files]);
       setSelectedFile(null);
       setDescription('');
       const fileInput = document.getElementById('file-upload-input');
       if (fileInput) fileInput.value = '';
-      setNotice(`تم رفع الملف «${newFile.name}» بنجاح.`);
+      const savedSize = (uploadFile.size / (1024 * 1024)).toFixed(2);
+      const originalSizeMb = (originalSize / (1024 * 1024)).toFixed(2);
+      setNotice(uploadFile.size < originalSize
+        ? `تم ضغط الصورة ورفعها: ${originalSizeMb} إلى ${savedSize} ميجابايت.`
+        : `تم رفع الملف «${newFile.name}» بنجاح.`);
     } catch {
       setNotice('تعذر حفظ الملف. قد تكون مساحة تخزين المتصفح ممتلئة.');
     } finally {
