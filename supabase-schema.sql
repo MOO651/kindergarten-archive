@@ -48,3 +48,32 @@ create policy "Anyone can update archive files"
 create policy "Anyone can delete archive files"
   on storage.objects for delete
   using (bucket_id = 'archive-files');
+
+create table if not exists public.follow_up_forms (
+  id text primary key,
+  title text not null,
+  date text not null,
+  responsible text default '',
+  status text not null default 'قيد المتابعة',
+  notes text default '',
+  created_at bigint not null
+);
+
+alter table public.follow_up_forms enable row level security;
+
+create policy "Anyone can view follow up forms"
+  on public.follow_up_forms for select
+  using (true);
+
+create policy "Anyone can add follow up forms"
+  on public.follow_up_forms for insert
+  with check (true);
+
+create policy "Anyone can edit follow up forms"
+  on public.follow_up_forms for update
+  using (true)
+  with check (true);
+
+create policy "Anyone can delete follow up forms"
+  on public.follow_up_forms for delete
+  using (true);

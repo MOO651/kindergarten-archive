@@ -86,6 +86,64 @@ export const downloadFile = async (file) => {
   return data;
 };
 
+const FOLLOW_UP_KEY = 'kindergarten-follow-up-forms';
+
+export const getFollowUpForms = async () => {
+  if (isRemoteStorageConfigured) {
+    const { data, error } = await supabase.from('follow_up_forms').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    return data.map((form) => ({
+      ...form,
+      createdAt: form.created_at,
+    }));
+  }
+  return JSON.parse(localStorage.getItem(FOLLOW_UP_KEY) || '[]');
+};
+
+export const saveFollowUpForm = async (form) => {
+  if (isRemoteStorageConfigured) {
+    const { error } = await supabase.from('follow_up_forms').insert({
+      id: form.id,
+      title: form.title,
+      date: form.date,
+      responsible: form.responsible,
+      status: form.status,
+      notes: form.notes,
+      created_at: form.createdAt,
+    });
+    if (error) throw error;
+    return;
+  }
+  const forms = JSON.parse(localStorage.getItem(FOLLOW_UP_KEY) || '[]');
+  localStorage.setItem(FOLLOW_UP_KEY, JSON.stringify([form, ...forms]));
+};
+
+export const updateFollowUpForm = async (form) => {
+  if (isRemoteStorageConfigured) {
+    const { error } = await supabase.from('follow_up_forms').update({
+      title: form.title,
+      date: form.date,
+      responsible: form.responsible,
+      status: form.status,
+      notes: form.notes,
+    }).eq('id', form.id);
+    if (error) throw error;
+    return;
+  }
+  const forms = JSON.parse(localStorage.getItem(FOLLOW_UP_KEY) || '[]');
+  localStorage.setItem(FOLLOW_UP_KEY, JSON.stringify(forms.map((item) => item.id === form.id ? form : item)));
+};
+
+export const deleteFollowUpForm = async (id) => {
+  if (isRemoteStorageConfigured) {
+    const { error } = await supabase.from('follow_up_forms').delete().eq('id', id);
+    if (error) throw error;
+    return;
+  }
+  const forms = JSON.parse(localStorage.getItem(FOLLOW_UP_KEY) || '[]');
+  localStorage.setItem(FOLLOW_UP_KEY, JSON.stringify(forms.filter((item) => item.id !== id)));
+};
+
 export const makeFileRecord = (file, sectionId, description = '') => ({
   id: `${Date.now()}-${crypto.randomUUID()}`,
   sectionId: String(sectionId),

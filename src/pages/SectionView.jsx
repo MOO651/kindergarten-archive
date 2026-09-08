@@ -38,6 +38,7 @@ export default function SectionView() {
     '27': 'الخطط الأسبوعية للبرامج والأنشطة',
     '28': 'اللوائح والأنظمة',
     '29': 'الأدلة'
+    , '30': 'متابعة السجلات'
   };
 
   const currentSectionTitle = sectionNames[id] || `القسم رقم (${id})`;

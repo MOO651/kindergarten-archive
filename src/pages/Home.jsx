@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Lock, Search, ChevronRight } from 'lucide-react';
+import { Calendar, ClipboardCheck, Lock, Search, ChevronRight } from 'lucide-react';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -43,6 +43,7 @@ export default function Home() {
     { id: 27, title: 'الخطط الأسبوعية للبرامج والأنشطة', category: 'الخطط', img: '/school-logo.svg', bg: '#ffedd5', color: '#ea580c' },
     { id: 28, title: 'اللوائح والأنظمة', category: 'الأنظمة', img: '/ministry-official.jpg', bg: '#e0f2fe', color: '#0284c7' },
     { id: 29, title: 'الأدلة', category: 'المراجع', img: '/school-logo.svg', bg: '#ecfccb', color: '#65a30d' },
+    { id: 30, title: 'متابعة السجلات', category: 'المتابعة', img: '/ministry-logo.svg', bg: '#e0f2fe', color: '#0369a1', isFollowUp: true },
   ];
 
   const filteredSections = sections.filter(sec => 
@@ -126,7 +127,7 @@ export default function Home() {
           {filteredSections.map((sec) => (
             <div 
               key={sec.id}
-              onClick={() => navigate(`/section/${sec.id}`)}
+              onClick={() => navigate(sec.isFollowUp ? '/follow-up' : `/section/${sec.id}`)}
               style={{ 
                 background: '#ffffff', 
                 border: '1px solid #e2e8f0', 
@@ -153,12 +154,12 @@ export default function Home() {
               <div>
                 {/* صندوق الشعار والصورة */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', background: sec.bg, padding: '12px 14px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.02)' }}>
-                  <img 
-                    src={sec.img} 
+                  {sec.isFollowUp ? <ClipboardCheck style={{ width: '38px', height: '38px', color: sec.color }} /> : <img 
+                    src={sec.img}
                     alt={sec.title} 
                     style={{ width: '38px', height: '38px', objectFit: 'contain', borderRadius: '6px' }} 
                     onError={(e) => { e.target.src = '/شعار.jpg'; }} 
-                  />
+                  />}
                   <span style={{ fontSize: '10px', color: '#475569', background: '#ffffff', padding: '3px 8px', borderRadius: '6px', fontWeight: '700', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                     {sec.category}
                   </span>
