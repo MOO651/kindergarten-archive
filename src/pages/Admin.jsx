@@ -1,7 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Upload, Trash2, Lock, FileText, ShieldCheck, Download, Database } from 'lucide-react';
-import { deleteFile, getAllFiles, makeFileRecord, saveFile, updateFile } from '../storage';
+import { deleteFile, downloadFile, getAllFiles, makeFileRecord, saveFile, updateFile } from '../storage';
+
+const fileToDataUrl = async (file) => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = () => reject(reader.error);
+  reader.readAsDataURL(file);
+});
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -104,16 +111,7 @@ export default function Admin() {
     try {
       const backupFiles = await Promise.all(allFiles.map(async (file) => ({
         ...file,
-        blob: await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = () => reject(reader.error);
-          if (!file.blob) {
-            reject(new Error('Missing file data'));
-            return;
-          }
-          reader.readAsDataURL(file.blob);
-        }),
+        blob: await fileToDataUrl(await downloadFile(file)),
       })));
       const backup = { version: 1, createdAt: new Date().toISOString(), files: backupFiles };
       const backupUrl = URL.createObjectURL(new Blob([JSON.stringify(backup)], { type: 'application/json' }));

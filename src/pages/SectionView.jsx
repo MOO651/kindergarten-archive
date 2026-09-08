@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowRight, FileText, Download, Eye, Lock } from 'lucide-react';
-import { getFiles } from '../storage';
+import { downloadFile, getFiles } from '../storage';
 
 export default function SectionView() {
   const { id } = useParams();
@@ -58,30 +58,33 @@ export default function SectionView() {
   }, [id]);
 
   // دالة معاينة الملف الحقيقي (فتح الملف في تبويب جديد لو متاح كـ Data URL أو رابط)
-  const handlePreview = (file) => {
-    if (file.blob) {
-      const fileUrl = URL.createObjectURL(file.blob);
+  const handlePreview = async (file) => {
+    try {
+      const blob = await downloadFile(file);
+      const fileUrl = URL.createObjectURL(blob);
       const win = window.open();
       if (win) {
         win.document.write(`<iframe src="${fileUrl}" frameborder="0" style="border:0; top:0; left:0; bottom:0; right:0; width:100%; height:100%;" allowfullscreen></iframe>`);
       }
-    } else {
-      setNotice('هذا الملف قديم ولا يحتوي على نسخة قابلة للعرض. ارفعه مرة أخرى من لوحة التحكم.');
+    } catch {
+      setNotice('تعذر معاينة الملف. تأكد من اتصال الإنترنت وصلاحية التخزين.');
     }
   };
 
   // دالة تحميل الملف الحقيقي
-  const handleDownload = (file) => {
-    if (file.blob) {
-      const fileUrl = URL.createObjectURL(file.blob);
+  const handleDownload = async (file) => {
+    try {
+      const blob = await downloadFile(file);
+      const fileUrl = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = fileUrl;
       a.download = file.name;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-    } else {
-      setNotice('هذا الملف قديم ولا يحتوي على نسخة قابلة للتحميل. ارفعه مرة أخرى من لوحة التحكم.');
+      URL.revokeObjectURL(fileUrl);
+    } catch {
+      setNotice('تعذر تحميل الملف. تأكد من اتصال الإنترنت وصلاحية التخزين.');
     }
   };
 

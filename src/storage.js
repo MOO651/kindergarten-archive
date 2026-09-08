@@ -79,6 +79,13 @@ export const deleteFile = async (id) => {
   if (error) throw error;
 };
 
+export const downloadFile = async (file) => {
+  if (!isRemoteStorageConfigured) return file.blob;
+  const { data, error } = await supabase.storage.from(BUCKET_NAME).download(file.storagePath);
+  if (error) throw error;
+  return data;
+};
+
 export const makeFileRecord = (file, sectionId, description = '') => ({
   id: `${Date.now()}-${crypto.randomUUID()}`,
   sectionId: String(sectionId),
@@ -104,14 +111,10 @@ const toRemoteRecord = (file) => ({
   storage_path: file.storagePath,
 });
 
-const hydrateRemoteFiles = async (records) => Promise.all(records.map(async (record) => {
-  const { data, error } = await supabase.storage.from(BUCKET_NAME).download(record.storage_path);
-  if (error) throw error;
-  return {
-    ...record,
-    sectionId: record.section_id,
-    createdAt: record.created_at,
-    storagePath: record.storage_path,
-    blob: data,
-  };
+const hydrateRemoteFiles = async (records) => records.map((record) => ({
+  ...record,
+  sectionId: record.section_id,
+  createdAt: record.created_at,
+  storagePath: record.storage_path,
+  blob: null,
 }));
