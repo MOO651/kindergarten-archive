@@ -89,7 +89,7 @@ textarea:focus-visible {
   border-radius: 0;
   object-fit: contain;
   object-position: center;
-  padding: 4px;
+  padding: 0;
   transform: none;
 }
 

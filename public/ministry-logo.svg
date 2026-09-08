@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 220" role="img" aria-labelledby="title">
+  <title id="title">شعار وزارة التعليم السعودية</title>
+  <rect width="420" height="220" fill="#fff"/>
+  <g fill="#159b84">
+    <circle cx="132" cy="50" r="5"/><circle cx="149" cy="50" r="5"/><circle cx="166" cy="50" r="5"/><circle cx="183" cy="50" r="5"/><circle cx="200" cy="50" r="5"/><circle cx="217" cy="50" r="5"/><circle cx="234" cy="50" r="5"/><circle cx="251" cy="50" r="5"/><circle cx="268" cy="50" r="5"/>
+    <circle cx="132" cy="67" r="5"/><circle cx="149" cy="67" r="5"/><circle cx="166" cy="67" r="5"/><circle cx="183" cy="67" r="5"/><circle cx="200" cy="67" r="5"/><circle cx="217" cy="67" r="5"/><circle cx="234" cy="67" r="5"/><circle cx="251" cy="67" r="5"/><circle cx="268" cy="67" r="5"/>
+    <circle cx="132" cy="84" r="5"/><circle cx="149" cy="84" r="5"/><circle cx="166" cy="84" r="5"/><circle cx="183" cy="84" r="5"/><circle cx="200" cy="84" r="5"/><circle cx="217" cy="84" r="5"/><circle cx="234" cy="84" r="5"/><circle cx="251" cy="84" r="5"/><circle cx="268" cy="84" r="5"/>
+    <circle cx="132" cy="101" r="5"/><circle cx="149" cy="101" r="5"/><circle cx="166" cy="101" r="5"/><circle cx="183" cy="101" r="5"/><circle cx="200" cy="101" r="5"/><circle cx="217" cy="101" r="5"/><circle cx="234" cy="101" r="5"/><circle cx="251" cy="101" r="5"/><circle cx="268" cy="101" r="5"/>
+  </g>
+  <path d="M126 48 Q200 122 274 48 M126 65 Q200 139 274 65 M126 82 Q200 156 274 82 M126 99 Q200 173 274 99" fill="none" stroke="#159b84" stroke-width="3" opacity=".75"/>
+  <text x="210" y="145" text-anchor="middle" direction="rtl" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#159b84">وزارة التعليم</text>
+  <text x="210" y="177" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#777">Ministry of Education</text>
+</svg>
