@@ -11,7 +11,6 @@ const fileToDataUrl = async (file) => new Promise((resolve, reject) => {
   reader.readAsDataURL(file);
 });
 
-// الأقسام الافتراضية
 const defaultSections = [
   { id: '1', title: 'الدعم الموحد', category: 'الأنظمة' },
   { id: '2', title: 'التقويم المدرسي', category: 'التنظيم' },
@@ -59,17 +58,26 @@ export default function Admin() {
   const [isUploading, setIsUploading] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
 
-  // 1. إدارة الأعوام الدراسية (تخزين واسترجاع من LocalStorage)
+  // جلب أو تهيئة الأعوام الدراسية في LocalStorage
   const [years, setYears] = useState(() => {
     const saved = localStorage.getItem('kindergarten_admin_years');
-    return saved ? JSON.parse(saved) : ['2028', '2027', '2026', '2025', '2024', '2023'];
+    if (saved) {
+      try { return JSON.parse(saved); } catch { /* ignore */ }
+    }
+    const defaultYears = ['2028', '2027', '2026', '2025', '2024', '2023'];
+    localStorage.setItem('kindergarten_admin_years', JSON.stringify(defaultYears));
+    return defaultYears;
   });
   const [newYear, setNewYear] = useState('');
 
-  // 2. إدارة الأقسام
+  // جلب أو تهيئة الأقسام في LocalStorage
   const [sections, setSections] = useState(() => {
     const saved = localStorage.getItem('kindergarten_admin_sections');
-    return saved ? JSON.parse(saved) : defaultSections;
+    if (saved) {
+      try { return JSON.parse(saved); } catch { /* ignore */ }
+    }
+    localStorage.setItem('kindergarten_admin_sections', JSON.stringify(defaultSections));
+    return defaultSections;
   });
   const [newSectionTitle, setNewSectionTitle] = useState('');
   const [newSectionCategory, setNewSectionCategory] = useState('');
@@ -97,37 +105,40 @@ export default function Admin() {
     setPassword('');
   };
 
-  // وظيفة إضافة عام دراسي جديد
+  // إضافة عام دراسي
   const handleAddYear = (e) => {
     e.preventDefault();
-    if (!newYear.trim()) {
+    const trimmedYear = newYear.trim();
+    if (!trimmedYear) {
       setNotice('يرجى كتابة اسم العام (مثال: 2029).');
       return;
     }
-    if (years.includes(newYear.trim())) {
+    if (years.includes(trimmedYear)) {
       setNotice('هذا العام موجود مسبقاً.');
       return;
     }
-    const updatedYears = [newYear.trim(), ...years];
+    const updatedYears = [trimmedYear, ...years];
     setYears(updatedYears);
+    localStorage.setItem('kindergarten_admin_years', JSON.stringify(updatedYears));
     setNewYear('');
-    setNotice('تم إضافة العام الدراسي بنجاح وسيظهر في الصفحة الرئيسية.');
+    setNotice(`تم إضافة عام ${trimmedYear} بنجاح وتحديث القائمة الرئيسية.`);
   };
 
-  // وظيفة حذف عام دراسي
+  // حذف عام دراسي
   const handleDeleteYear = (yr) => {
     if (years.length <= 1) {
-      setNotice('يجب أن يبقى عام دراسي واحد على الأقل في النظام.');
+      setNotice('يجب أن يبقى عام دراسي واحد على الأقل.');
       return;
     }
     if (window.confirm(`هل أنت متأكد من حذف عام ${yr}؟`)) {
       const updatedYears = years.filter(y => y !== yr);
       setYears(updatedYears);
-      setNotice('تم حذف العام الدراسي بنجاح.');
+      localStorage.setItem('kindergarten_admin_years', JSON.stringify(updatedYears));
+      setNotice(`تم حذف عام ${yr} بنجاح.`);
     }
   };
 
-  // وظيفة إضافة قسم جديد
+  // إضافة قسم جديد
   const handleAddSection = (e) => {
     e.preventDefault();
     if (!newSectionTitle.trim()) {
@@ -142,16 +153,18 @@ export default function Admin() {
     };
     const updatedSections = [...sections, newSec];
     setSections(updatedSections);
+    localStorage.setItem('kindergarten_admin_sections', JSON.stringify(updatedSections));
     setNewSectionTitle('');
     setNewSectionCategory('');
     setNotice(`تم إضافة القسم "${newSec.title}" بنجاح.`);
   };
 
-  // وظيفة حذف قسم
+  // حذف قسم
   const handleDeleteSection = (secId) => {
     if (window.confirm('هل أنت متأكد من حذف هذا القسم نهائياً؟')) {
       const updatedSections = sections.filter(s => s.id !== secId);
       setSections(updatedSections);
+      localStorage.setItem('kindergarten_admin_sections', JSON.stringify(updatedSections));
       setNotice('تم حذف القسم بنجاح.');
     }
   };
@@ -343,11 +356,11 @@ export default function Admin() {
 
         {notice && <div role="status" style={{ background: '#ecfdf5', color: '#047857', padding: '12px 16px', borderRadius: '12px', marginBottom: '20px', fontSize: '13px', fontWeight: '700', border: '1px solid #a7f3d0' }}>{notice}</div>}
 
-        {/* 1. قسم إدارة الأعوام الدراسية (جديد وإضافته للتحكم الكامل) */}
-        <div className="official-card" style={{ padding: '30px', marginBottom: '30px' }}>
+        {/* 1. قسم إدارة الأعوام الدراسية (مباشرة بعد الهيدر لضمان ظهوره) */}
+        <div className="official-card" style={{ padding: '30px', marginBottom: '30px', border: '2px solid #2563eb' }}>
           <h2 style={{ fontSize: '16px', fontWeight: '900', color: '#0f172a', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Calendar style={{ width: '18px', height: '18px', color: '#2563eb' }} />
-            <span>إدارة الأعوام الدراسية (إضافة أو حذف الأعوام العلوية)</span>
+            <span>إدارة الأعوام الدراسية (تحديث القائمة العلوية للصفحة الرئيسية)</span>
           </h2>
           <form onSubmit={handleAddYear} style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
             <input 
@@ -365,7 +378,7 @@ export default function Admin() {
             {years.map(yr => (
               <span key={yr} style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 عام {yr}
-                <button type="button" onClick={() => handleDeleteYear(yr)} style={{ background: 'transparent', border: 'none', color: '#dc2626', cursor: 'pointer', fontWeight: 'bold' }}>×</button>
+                <button type="button" onClick={() => handleDeleteYear(yr)} style={{ background: 'transparent', border: 'none', color: '#dc2626', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>×</button>
               </span>
             ))}
           </div>
