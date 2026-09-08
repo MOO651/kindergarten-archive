@@ -11,7 +11,7 @@ export default function Home() {
   // الأقسام الرسمية المتاحة في أرشيف الروضة
   const sections = [
     { id: 1, title: 'الدعم الموحد', category: 'الأنظمة', img: '/الدعم الموحد.jpg', bg: '#e0f2fe', color: '#0284c7' },
-    { id: 2, title: 'التقويم المدرسي', category: 'التنظيم', img: '/شعار.jpg', bg: '#d1fae5', color: '#059669' },
+    { id: 2, title: 'التقويم المدرسي', category: 'التنظيم', img: '/school-logo.svg', bg: '#d1fae5', color: '#059669' },
     { id: 3, title: 'منصة عين الاثرائية', category: 'المنصات', img: '/عين.jpg', bg: '#fef3c7', color: '#d97706' },
     { id: 4, title: 'حضوري', category: 'الحضور', img: '/حضوري.png', bg: '#ccfbf1', color: '#0d9488' },
     { id: 5, title: 'نظام نور', category: 'الأنظمة', img: '/نور.jpg', bg: '#e0e7ff', color: '#4f46e5' },
@@ -22,27 +22,27 @@ export default function Home() {
     { id: 9, title: 'البرامج والأنشطة', category: 'الأنشطة', img: '/البرامج والانشطة.jpg', bg: '#ffedd5', color: '#ea580c' },
     { id: 10, title: 'الانضباط المدرسي', category: 'التوجيه', img: '/الانضباط المدرسي.jpg', bg: '#cffafe', color: '#0891b2' },
     
-    { id: 11, title: 'حماية الطفل', category: 'الطفولة', img: '/شعار.jpg', bg: '#ecfccb', color: '#65a30d' },
-    { id: 12, title: 'الشراكة', category: 'المجتمع', img: '/شعار.jpg', bg: '#fef9c3', color: '#ca8a04' },
+    { id: 11, title: 'حماية الطفل', category: 'الطفولة', img: '/حماية الطفل.png', bg: '#ecfccb', color: '#65a30d' },
+    { id: 12, title: 'الشراكة', category: 'المجتمع', img: '/الشراكه.jpg', bg: '#fef9c3', color: '#ca8a04' },
     { id: 13, title: 'النشرات والتبليغات', category: 'الإعلام', img: '/النشرات والتبليغات.jpg', bg: '#ffe4e6', color: '#e11d48' },
     { id: 14, title: 'المبادرات و التطوع', category: 'خدمة المجتمع', img: '/المبادرات و التطوع.png', bg: '#fef3c7', color: '#b45309' },
     { id: 15, title: 'منصة روضتي', category: 'المنصات', img: '/منصة روضتي.png', bg: '#d1fae5', color: '#047857' },
     
-    { id: 16, title: 'الانشطة الحركية واللعب في الخارج', category: 'الحركة', img: '/شعار.jpg', bg: '#dcfce7', color: '#16a34a' },
-    { id: 17, title: 'التطوير المهني', category: 'التدريب', img: '/شعار.jpg', bg: '#e0f2fe', color: '#0284c7' },
-    { id: 18, title: 'السلوك الوظيفي', category: 'الإدارة', img: '/شعار.jpg', bg: '#e0e7ff', color: '#4338ca' },
-    { id: 19, title: 'المجالس واللجان', category: 'الحوكمة', img: '/شعار.jpg', bg: '#f3e8ff', color: '#9333ea' },
-    { id: 20, title: 'الامن والسلامة البيئية', category: 'السلامة', img: '/شعار.jpg', bg: '#d1fae5', color: '#059669' },
+    { id: 16, title: 'الانشطة الحركية واللعب في الخارج', category: 'الحركة', img: '/الانشطة الحراكة واللعب في الخارج.jpg', bg: '#dcfce7', color: '#16a34a' },
+    { id: 17, title: 'التطوير المهني', category: 'التدريب', img: '/التطوير المهني.webp', bg: '#e0f2fe', color: '#0284c7' },
+    { id: 18, title: 'السلوك الوظيفي', category: 'الإدارة', img: '/السلوك التوظيفي.jpg', bg: '#e0e7ff', color: '#4338ca' },
+    { id: 19, title: 'المجالس واللجان', category: 'الحوكمة', img: '/المجالس و اللجان.png', bg: '#f3e8ff', color: '#9333ea' },
+    { id: 20, title: 'الامن والسلامة البيئية', category: 'السلامة', img: '/السلامة البيئية.jpg', bg: '#d1fae5', color: '#059669' },
     
-    { id: 21, title: 'الخطة التشغيلية', category: 'التخطيط', img: '/شعار.jpg', bg: '#f1f5f9', color: '#475569' },
-    { id: 22, title: 'المسابقات', category: 'التحفيز', img: '/شعار.jpg', bg: '#fef3c7', color: '#d97706' },
-    { id: 23, title: 'العقد السلوكي', category: 'الإرشاد', img: '/شعار.jpg', bg: '#e0f2fe', color: '#0284c7' },
-    { id: 24, title: 'اداء المتعلمين', category: 'التقييم', img: '/شعار.jpg', bg: '#dcfce7', color: '#15803d' },
-    { id: 25, title: 'المنهج الوطني', category: 'المناهج', img: '/شعار.jpg', bg: '#fef3c7', color: '#b45309' },
-    { id: 26, title: 'الخطط الأسبوعية التعليمية', category: 'الخطط', img: '/شعار.jpg', bg: '#dbeafe', color: '#2563eb' },
-    { id: 27, title: 'الخطط الأسبوعية للبرامج والأنشطة', category: 'الخطط', img: '/شعار.jpg', bg: '#ffedd5', color: '#ea580c' },
-    { id: 28, title: 'اللوائح والأنظمة', category: 'الأنظمة', img: '/شعار.jpg', bg: '#e0f2fe', color: '#0284c7' },
-    { id: 29, title: 'الأدلة', category: 'المراجع', img: '/شعار.jpg', bg: '#ecfccb', color: '#65a30d' },
+    { id: 21, title: 'الخطة التشغيلية', category: 'التخطيط', img: '/الخطة التشغلية.jpg', bg: '#f1f5f9', color: '#475569' },
+    { id: 22, title: 'المسابقات', category: 'التحفيز', img: '/المسابقات.png', bg: '#fef3c7', color: '#d97706' },
+    { id: 23, title: 'العقد السلوكي', category: 'الإرشاد', img: '/العقد السلوكي.jpg', bg: '#e0f2fe', color: '#0284c7' },
+    { id: 24, title: 'اداء المتعلمين', category: 'التقييم', img: '/اداء المتعلمين.jpg', bg: '#dcfce7', color: '#15803d' },
+    { id: 25, title: 'المنهج الوطني', category: 'المناهج', img: '/المنهج الوطني.jpg', bg: '#fef3c7', color: '#b45309' },
+    { id: 26, title: 'الخطط الأسبوعية التعليمية', category: 'الخطط', img: '/school-logo.svg', bg: '#dbeafe', color: '#2563eb' },
+    { id: 27, title: 'الخطط الأسبوعية للبرامج والأنشطة', category: 'الخطط', img: '/school-logo.svg', bg: '#ffedd5', color: '#ea580c' },
+    { id: 28, title: 'اللوائح والأنظمة', category: 'الأنظمة', img: '/ministry-official.jpg', bg: '#e0f2fe', color: '#0284c7' },
+    { id: 29, title: 'الأدلة', category: 'المراجع', img: '/school-logo.svg', bg: '#ecfccb', color: '#65a30d' },
   ];
 
   const filteredSections = sections.filter(sec => 
