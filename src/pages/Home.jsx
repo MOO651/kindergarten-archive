@@ -2,54 +2,67 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, ClipboardCheck, Lock, Search, ChevronRight } from 'lucide-react';
 
+// الأقسام الافتراضية في حال لم تكن مخزنة مسبقاً
+const defaultSections = [
+  { id: '1', title: 'الدعم الموحد', category: 'الأنظمة', img: '/الدعم الموحد.jpg', bg: '#e0f2fe', color: '#0284c7' },
+  { id: '2', title: 'التقويم المدرسي', category: 'التنظيم', img: '/school-logo.svg', bg: '#d1fae5', color: '#059669' },
+  { id: '3', title: 'منصة عين الاثرائية', category: 'المنصات', img: '/عين.jpg', bg: '#fef3c7', color: '#d97706' },
+  { id: '4', title: 'حضوري', category: 'الحضور', img: '/حضوري.png', bg: '#ccfbf1', color: '#0d9488' },
+  { id: '5', title: 'نظام نور', category: 'الأنظمة', img: '/نور.jpg', bg: '#e0e7ff', color: '#4f46e5' },
+  
+  { id: '6', title: 'الصحة المدرسية', category: 'الرعاية', img: '/الصحه المدرسية.jpg', bg: '#fce7f3', color: '#db2777' },
+  { id: '7', title: 'التواصل', category: 'العلاقات', img: '/التواصل.png', bg: '#dbeafe', color: '#2563eb' },
+  { id: '8', title: 'التقارير والاحصائيات', category: 'التوثيق', img: '/التقارير والاحصائيات.png', bg: '#ede9fe', color: '#7c3aed' },
+  { id: '9', title: 'البرامج والأنشطة', category: 'الأنشطة', img: '/البرامج والانشطة.jpg', bg: '#ffedd5', color: '#ea580c' },
+  { id: '10', title: 'الانضباط المدرسي', category: 'التوجيه', img: '/الانضباط المدرسي.jpg', bg: '#cffafe', color: '#0891b2' },
+  
+  { id: '11', title: 'حماية الطفل', category: 'الطفولة', img: '/حماية الطفل.png', bg: '#ecfccb', color: '#65a30d' },
+  { id: '12', title: 'الشراكة', category: 'المجتمع', img: '/الشراكه.jpg', bg: '#fef9c3', color: '#ca8a04' },
+  { id: '13', title: 'النشرات والتبليغات', category: 'الإعلام', img: '/النشرات والتبليغات.jpg', bg: '#ffe4e6', color: '#e11d48' },
+  { id: '14', title: 'المبادرات و التطوع', category: 'خدمة المجتمع', img: '/المبادرات و التطوع.png', bg: '#fef3c7', color: '#b45309' },
+  { id: '15', title: 'منصة روضتي', category: 'المنصات', img: '/منصة روضتي.png', bg: '#d1fae5', color: '#047857' },
+  
+  { id: '16', title: 'الانشطة الحركية واللعب في الخارج', category: 'الحركة', img: '/الانشطة الحراكة واللعب في الخارج.jpg', bg: '#dcfce7', color: '#16a34a' },
+  { id: '17', title: 'التطوير المهني', category: 'التدريب', img: '/التطوير المهني.webp', bg: '#e0f2fe', color: '#0284c7' },
+  { id: '18', title: 'السلوك الوظيفي', category: 'الإدارة', img: '/السلوك التوظيفي.jpg', bg: '#e0e7ff', color: '#4338ca' },
+  { id: '19', title: 'المجالس واللجان', category: 'الحوكمة', img: '/المجالس و اللجان.png', bg: '#f3e8ff', color: '#9333ea' },
+  { id: '20', title: 'الامن والسلامة البيئية', category: 'السلامة', img: '/السلامة البيئية.jpg', bg: '#d1fae5', color: '#059669' },
+  
+  { id: '21', title: 'الخطة التشغيلية', category: 'التخطيط', img: '/الخطة التشغلية.jpg', bg: '#f1f5f9', color: '#475569' },
+  { id: '22', title: 'المسابقات', category: 'التحفيز', img: '/المسابقات.png', bg: '#fef3c7', color: '#d97706' },
+  { id: '23', title: 'العقد السلوكي', category: 'الإرشاد', img: '/العقد السلوكي.jpg', bg: '#e0f2fe', color: '#0284c7' },
+  { id: '24', title: 'اداء المتعلمين', category: 'التقييم', img: '/اداء المتعلمين.jpg', bg: '#dcfce7', color: '#15803d' },
+  { id: '25', title: 'المنهج الوطني', category: 'المناهج', img: '/المنهج الوطني.jpg', bg: '#fef3c7', color: '#b45309' },
+  { id: '26', title: 'الخطط الأسبوعية التعليمية', category: 'الخطط', img: '/school-logo.svg', bg: '#dbeafe', color: '#2563eb' },
+  { id: '27', title: 'الخطط الأسبوعية للبرامج والأنشطة', category: 'الخطط', img: '/school-logo.svg', bg: '#ffedd5', color: '#ea580c' },
+  { id: '28', title: 'اللوائح والأنظمة', category: 'الأنظمة', img: '/ministry-official.jpg', bg: '#e0f2fe', color: '#0284c7' },
+  { id: '29', title: 'الأدلة', category: 'المراجع', img: '/school-logo.svg', bg: '#ecfccb', color: '#65a30d' },
+  { id: '30', title: 'متابعة السجلات', category: 'المتابعة', img: '/ministry-logo.svg', bg: '#e0f2fe', color: '#0369a1', isFollowUp: true },
+];
+
 export default function Home() {
   const navigate = useNavigate();
-  const [selectedYear, setSelectedYear] = useState('2026');
+
+  // جلب الأعوام الدراسية ديناميكياً من الـ LocalStorage
+  const [years] = useState(() => {
+    const saved = localStorage.getItem('kindergarten_admin_years');
+    return saved ? JSON.parse(saved) : ['2028', '2027', '2026', '2025', '2024', '2023'];
+  });
+  const [selectedYear, setSelectedYear] = useState(years[0] || '2026');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('الكل');
 
-  // الأقسام الرسمية المتاحة في أرشيف الروضة
-  const sections = [
-    { id: 1, title: 'الدعم الموحد', category: 'الأنظمة', img: '/الدعم الموحد.jpg', bg: '#e0f2fe', color: '#0284c7' },
-    { id: 2, title: 'التقويم المدرسي', category: 'التنظيم', img: '/school-logo.svg', bg: '#d1fae5', color: '#059669' },
-    { id: 3, title: 'منصة عين الاثرائية', category: 'المنصات', img: '/عين.jpg', bg: '#fef3c7', color: '#d97706' },
-    { id: 4, title: 'حضوري', category: 'الحضور', img: '/حضوري.png', bg: '#ccfbf1', color: '#0d9488' },
-    { id: 5, title: 'نظام نور', category: 'الأنظمة', img: '/نور.jpg', bg: '#e0e7ff', color: '#4f46e5' },
-    
-    { id: 6, title: 'الصحة المدرسية', category: 'الرعاية', img: '/الصحه المدرسية.jpg', bg: '#fce7f3', color: '#db2777' },
-    { id: 7, title: 'التواصل', category: 'العلاقات', img: '/التواصل.png', bg: '#dbeafe', color: '#2563eb' },
-    { id: 8, title: 'التقارير والاحصائيات', category: 'التوثيق', img: '/التقارير والاحصائيات.png', bg: '#ede9fe', color: '#7c3aed' },
-    { id: 9, title: 'البرامج والأنشطة', category: 'الأنشطة', img: '/البرامج والانشطة.jpg', bg: '#ffedd5', color: '#ea580c' },
-    { id: 10, title: 'الانضباط المدرسي', category: 'التوجيه', img: '/الانضباط المدرسي.jpg', bg: '#cffafe', color: '#0891b2' },
-    
-    { id: 11, title: 'حماية الطفل', category: 'الطفولة', img: '/حماية الطفل.png', bg: '#ecfccb', color: '#65a30d' },
-    { id: 12, title: 'الشراكة', category: 'المجتمع', img: '/الشراكه.jpg', bg: '#fef9c3', color: '#ca8a04' },
-    { id: 13, title: 'النشرات والتبليغات', category: 'الإعلام', img: '/النشرات والتبليغات.jpg', bg: '#ffe4e6', color: '#e11d48' },
-    { id: 14, title: 'المبادرات و التطوع', category: 'خدمة المجتمع', img: '/المبادرات و التطوع.png', bg: '#fef3c7', color: '#b45309' },
-    { id: 15, title: 'منصة روضتي', category: 'المنصات', img: '/منصة روضتي.png', bg: '#d1fae5', color: '#047857' },
-    
-    { id: 16, title: 'الانشطة الحركية واللعب في الخارج', category: 'الحركة', img: '/الانشطة الحراكة واللعب في الخارج.jpg', bg: '#dcfce7', color: '#16a34a' },
-    { id: 17, title: 'التطوير المهني', category: 'التدريب', img: '/التطوير المهني.webp', bg: '#e0f2fe', color: '#0284c7' },
-    { id: 18, title: 'السلوك الوظيفي', category: 'الإدارة', img: '/السلوك التوظيفي.jpg', bg: '#e0e7ff', color: '#4338ca' },
-    { id: 19, title: 'المجالس واللجان', category: 'الحوكمة', img: '/المجالس و اللجان.png', bg: '#f3e8ff', color: '#9333ea' },
-    { id: 20, title: 'الامن والسلامة البيئية', category: 'السلامة', img: '/السلامة البيئية.jpg', bg: '#d1fae5', color: '#059669' },
-    
-    { id: 21, title: 'الخطة التشغيلية', category: 'التخطيط', img: '/الخطة التشغلية.jpg', bg: '#f1f5f9', color: '#475569' },
-    { id: 22, title: 'المسابقات', category: 'التحفيز', img: '/المسابقات.png', bg: '#fef3c7', color: '#d97706' },
-    { id: 23, title: 'العقد السلوكي', category: 'الإرشاد', img: '/العقد السلوكي.jpg', bg: '#e0f2fe', color: '#0284c7' },
-    { id: 24, title: 'اداء المتعلمين', category: 'التقييم', img: '/اداء المتعلمين.jpg', bg: '#dcfce7', color: '#15803d' },
-    { id: 25, title: 'المنهج الوطني', category: 'المناهج', img: '/المنهج الوطني.jpg', bg: '#fef3c7', color: '#b45309' },
-    { id: 26, title: 'الخطط الأسبوعية التعليمية', category: 'الخطط', img: '/school-logo.svg', bg: '#dbeafe', color: '#2563eb' },
-    { id: 27, title: 'الخطط الأسبوعية للبرامج والأنشطة', category: 'الخطط', img: '/school-logo.svg', bg: '#ffedd5', color: '#ea580c' },
-    { id: 28, title: 'اللوائح والأنظمة', category: 'الأنظمة', img: '/ministry-official.jpg', bg: '#e0f2fe', color: '#0284c7' },
-    { id: 29, title: 'الأدلة', category: 'المراجع', img: '/school-logo.svg', bg: '#ecfccb', color: '#65a30d' },
-    { id: 30, title: 'متابعة السجلات', category: 'المتابعة', img: '/ministry-logo.svg', bg: '#e0f2fe', color: '#0369a1', isFollowUp: true },
-  ];
+  // جلب الأقسام ديناميكياً من الـ LocalStorage (لو الأدمن أضاف أو حذف أقسام)
+  const [sections] = useState(() => {
+    const saved = localStorage.getItem('kindergarten_admin_sections');
+    return saved ? JSON.parse(saved) : defaultSections;
+  });
 
   const filteredSections = sections.filter(sec => 
     sec.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
     (selectedCategory === 'الكل' || sec.category === selectedCategory)
   );
+  
   const categories = ['الكل', ...new Set(sections.map((section) => section.category))];
 
   return (
@@ -77,12 +90,9 @@ export default function Home() {
               onChange={(e) => setSelectedYear(e.target.value)}
               style={{ background: 'transparent', color: '#1e293b', border: 'none', outline: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: '700' }}
             >
-              <option value="2028">عام 2028</option>
-              <option value="2027">عام 2027</option>
-              <option value="2026">عام 2026</option>
-              <option value="2025">عام 2025</option>
-              <option value="2024">عام 2024</option>
-              <option value="2023">عام 2023</option>
+              {years.map(yr => (
+                <option key={yr} value={yr}>عام {yr}</option>
+              ))}
             </select>
           </div>
 
@@ -102,7 +112,7 @@ export default function Home() {
         {/* الترويسة الرئيسية */}
         <div style={{ textAlign: 'center', marginBottom: '35px' }}>
           <div style={{ display: 'inline-block', background: '#dbeafe', color: '#1e40af', padding: '5px 16px', borderRadius: '20px', fontSize: '12px', fontWeight: '800', marginBottom: '8px', border: '1px solid #bfdbfe' }}>
-            اداء الروضة
+            اداء الروضة (العام: {selectedYear})
           </div>
           <h2 style={{ fontSize: '32px', fontWeight: '900', color: '#0f172a', marginBottom: '5px' }}>
             سجلات الروضة
@@ -145,7 +155,7 @@ export default function Home() {
                 boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = sec.color;
+                e.currentTarget.style.borderColor = sec.color || '#2563eb';
                 e.currentTarget.style.transform = 'translateY(-3px)';
                 e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.06)';
               }}
@@ -157,9 +167,9 @@ export default function Home() {
             >
               <div>
                 {/* صندوق الشعار والصورة */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', background: sec.bg, padding: '12px 14px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.02)' }}>
-                  {sec.isFollowUp ? <ClipboardCheck style={{ width: '38px', height: '38px', color: sec.color }} /> : <img 
-                    src={sec.img}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', background: sec.bg || '#e0f2fe', padding: '12px 14px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.02)' }}>
+                  {sec.isFollowUp ? <ClipboardCheck style={{ width: '38px', height: '38px', color: sec.color || '#0369a1' }} /> : <img 
+                    src={sec.img || '/شعار.jpg'}
                     alt={sec.title} 
                     style={{ width: '38px', height: '38px', objectFit: 'contain', borderRadius: '6px' }} 
                     onError={(e) => { e.target.src = '/شعار.jpg'; }} 

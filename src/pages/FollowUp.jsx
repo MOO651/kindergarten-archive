@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, ClipboardCheck, Pencil, Plus, Trash2 } from 'lucide-react';
-import { deleteFollowUpForm, getFollowUpForms, saveFollowUpForm, updateFollowUpForm } from '../storage';
 
 const emptyForm = { title: '', date: new Date().toISOString().split('T')[0], responsible: '', status: 'قيد المتابعة', notes: '' };
 
@@ -10,19 +9,35 @@ export default function FollowUp() {
   const [editingId, setEditingId] = useState(null);
   const [notice, setNotice] = useState('');
 
-  const loadForms = () => getFollowUpForms()
-    .then(setForms)
-    .catch(() => setNotice('تعذر تحميل استمارات المتابعة. شغّل جدول المتابعة في Supabase.'));
+  // تحميل الاستمارات من الـ LocalStorage
+  const loadForms = () => {
+    try {
+      const saved = localStorage.getItem('kindergarten_follow_up_forms');
+      if (saved) {
+        setForms(JSON.parse(saved));
+      } else {
+        setForms([]);
+      }
+    } catch {
+      setNotice('تعذر تحميل استمارات المتابعة.');
+    }
+  };
 
   useEffect(() => {
     loadForms();
   }, []);
 
+  // حفظ التحديثات في الـ LocalStorage
+  const saveToLocalStorage = (updatedForms) => {
+    setForms(updatedForms);
+    localStorage.setItem('kindergarten_follow_up_forms', JSON.stringify(updatedForms));
+  };
+
   const handleChange = (event) => {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     if (!form.title.trim() || !form.date) {
       setNotice('اكتب اسم السجل والتاريخ أولًا.');
@@ -34,19 +49,24 @@ export default function FollowUp() {
       title: form.title.trim(),
       responsible: form.responsible.trim(),
       notes: form.notes.trim(),
-      id: editingId || `${Date.now()}-${crypto.randomUUID()}`,
+      id: editingId || String(Date.now()),
       createdAt: editingId ? forms.find((item) => item.id === editingId)?.createdAt || Date.now() : Date.now(),
     };
 
     try {
-      if (editingId) await updateFollowUpForm(record);
-      else await saveFollowUpForm(record);
+      if (editingId) {
+        const updated = forms.map((item) => (item.id === editingId ? record : item));
+        saveToLocalStorage(updated);
+        setNotice('تم تحديث الاستمارة بنجاح.');
+      } else {
+        const updated = [record, ...forms];
+        saveToLocalStorage(updated);
+        setNotice('تمت إضافة استمارة المتابعة بنجاح.');
+      }
       setForm(emptyForm);
       setEditingId(null);
-      setNotice(editingId ? 'تم تحديث الاستمارة.' : 'تمت إضافة استمارة المتابعة.');
-      await loadForms();
     } catch {
-      setNotice('تعذر حفظ الاستمارة. تأكد من إعداد Supabase.');
+      setNotice('تعذر حفظ الاستمارة.');
     }
   };
 
@@ -56,11 +76,11 @@ export default function FollowUp() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = (id) => {
     if (!window.confirm('هل تريد حذف استمارة المتابعة؟')) return;
     try {
-      await deleteFollowUpForm(id);
-      setForms((current) => current.filter((item) => item.id !== id));
+      const updated = forms.filter((item) => item.id !== id);
+      saveToLocalStorage(updated);
       setNotice('تم حذف الاستمارة.');
     } catch {
       setNotice('تعذر حذف الاستمارة.');
