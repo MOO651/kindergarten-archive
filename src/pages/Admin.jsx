@@ -11,7 +11,7 @@ const fileToDataUrl = async (file) => new Promise((resolve, reject) => {
   reader.readAsDataURL(file);
 });
 
-// الأقسام الافتراضية الـ 29 + قسم المتابعة الأساسي
+// الأقسام الافتراضية
 const defaultSections = [
   { id: '1', title: 'الدعم الموحد', category: 'الأنظمة' },
   { id: '2', title: 'التقويم المدرسي', category: 'التنظيم' },
@@ -59,14 +59,14 @@ export default function Admin() {
   const [isUploading, setIsUploading] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
 
-  // إدارة الأعوام الدراسية وتخزينها في الـ LocalStorage
+  // 1. إدارة الأعوام الدراسية (تخزين واسترجاع من LocalStorage)
   const [years, setYears] = useState(() => {
     const saved = localStorage.getItem('kindergarten_admin_years');
     return saved ? JSON.parse(saved) : ['2028', '2027', '2026', '2025', '2024', '2023'];
   });
   const [newYear, setNewYear] = useState('');
 
-  // إدارة الأقسام وتخزينها في الـ LocalStorage
+  // 2. إدارة الأقسام
   const [sections, setSections] = useState(() => {
     const saved = localStorage.getItem('kindergarten_admin_sections');
     return saved ? JSON.parse(saved) : defaultSections;
@@ -97,10 +97,13 @@ export default function Admin() {
     setPassword('');
   };
 
-  // إضافة عام دراسي جديد
+  // وظيفة إضافة عام دراسي جديد
   const handleAddYear = (e) => {
     e.preventDefault();
-    if (!newYear.trim()) return;
+    if (!newYear.trim()) {
+      setNotice('يرجى كتابة اسم العام (مثال: 2029).');
+      return;
+    }
     if (years.includes(newYear.trim())) {
       setNotice('هذا العام موجود مسبقاً.');
       return;
@@ -108,13 +111,13 @@ export default function Admin() {
     const updatedYears = [newYear.trim(), ...years];
     setYears(updatedYears);
     setNewYear('');
-    setNotice('تم إضافة العام الدراسي وتحديثه في القائمة العلوية الرئيسية بنجاح.');
+    setNotice('تم إضافة العام الدراسي بنجاح وسيظهر في الصفحة الرئيسية.');
   };
 
-  // حذف عام دراسي
+  // وظيفة حذف عام دراسي
   const handleDeleteYear = (yr) => {
     if (years.length <= 1) {
-      setNotice('يجب أن يبقى عام دراسي واحد على الأقل.');
+      setNotice('يجب أن يبقى عام دراسي واحد على الأقل في النظام.');
       return;
     }
     if (window.confirm(`هل أنت متأكد من حذف عام ${yr}؟`)) {
@@ -124,7 +127,7 @@ export default function Admin() {
     }
   };
 
-  // إضافة قسم جديد
+  // وظيفة إضافة قسم جديد
   const handleAddSection = (e) => {
     e.preventDefault();
     if (!newSectionTitle.trim()) {
@@ -135,10 +138,7 @@ export default function Admin() {
     const newSec = {
       id: newId,
       title: newSectionTitle.trim(),
-      category: newSectionCategory.trim() || 'عام',
-      bg: '#e0f2fe',
-      color: '#0284c7',
-      img: '/school-logo.svg'
+      category: newSectionCategory.trim() || 'عام'
     };
     const updatedSections = [...sections, newSec];
     setSections(updatedSections);
@@ -147,7 +147,7 @@ export default function Admin() {
     setNotice(`تم إضافة القسم "${newSec.title}" بنجاح.`);
   };
 
-  // حذف قسم
+  // وظيفة حذف قسم
   const handleDeleteSection = (secId) => {
     if (window.confirm('هل أنت متأكد من حذف هذا القسم نهائياً؟')) {
       const updatedSections = sections.filter(s => s.id !== secId);
@@ -343,11 +343,11 @@ export default function Admin() {
 
         {notice && <div role="status" style={{ background: '#ecfdf5', color: '#047857', padding: '12px 16px', borderRadius: '12px', marginBottom: '20px', fontSize: '13px', fontWeight: '700', border: '1px solid #a7f3d0' }}>{notice}</div>}
 
-        {/* 1. قسم إدارة الأعوام الدراسية (تحديث القائمة العلوية في الهوم) */}
+        {/* 1. قسم إدارة الأعوام الدراسية (جديد وإضافته للتحكم الكامل) */}
         <div className="official-card" style={{ padding: '30px', marginBottom: '30px' }}>
           <h2 style={{ fontSize: '16px', fontWeight: '900', color: '#0f172a', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Calendar style={{ width: '18px', height: '18px', color: '#2563eb' }} />
-            <span>إدارة الأعوام الدراسية (تظهر في أعلى الصفحة الرئيسية)</span>
+            <span>إدارة الأعوام الدراسية (إضافة أو حذف الأعوام العلوية)</span>
           </h2>
           <form onSubmit={handleAddYear} style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
             <input 
