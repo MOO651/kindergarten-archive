@@ -167,7 +167,7 @@ export default function Home() {
                 <h3 style={{ fontSize: '14px', fontWeight: '800', color: '#0f172a', lineHeight: '1.4' }}>{sec.title}</h3>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', paddingTop: '10px', borderTop: '1px solid #f1f5f9', fontSize: '11px', color: sec.color, fontWeight: '800' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', paddingTop: '10px', borderTop: '1px solid #f1f5f9', fontSize: '11px', color: '#000000', fontWeight: '800' }}>
                 <span>استعراض السجل</span>
                 <ChevronRight style={{ width: '14px', height: '14px' }} />
               </div>
