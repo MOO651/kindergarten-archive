@@ -350,7 +350,7 @@ export default function Admin() {
 
         {notice && <div role="status" style={{ background: '#ecfdf5', color: '#047857', padding: '12px 16px', borderRadius: '12px', marginBottom: '20px', fontSize: '13px', fontWeight: '700', border: '1px solid #a7f3d0' }}>{notice}</div>}
 
-        {/* 1. قسم إدارة الأعوام الدراسية */}
+        {/* 1. قسم إدارة الأعوام الدراسية (مهم جداً: هذا هو القسم المسؤول عن إضافة وحذف الأعوام) */}
         <div className="official-card" style={{ padding: '30px', marginBottom: '30px', border: '2px solid #2563eb' }}>
           <h2 style={{ fontSize: '16px', fontWeight: '900', color: '#0f172a', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Calendar style={{ width: '18px', height: '18px', color: '#2563eb' }} />
