@@ -78,7 +78,7 @@ export default function FollowUp() {
               <h1 style={{ color: '#0f172a', fontSize: '20px', fontWeight: '900' }}>متابعة السجلات</h1>
             </div>
           </div>
-          <ClipboardCheck size={34} color="#0369a1" />
+          <div className="follow-up-brand" aria-label="شعار حضوري"><img src="/حضوري.png" alt="شعار حضوري" /><ClipboardCheck size={30} color="#0369a1" /></div>
         </header>
 
         <section className="official-card" style={{ padding: '24px', marginBottom: '24px' }}>

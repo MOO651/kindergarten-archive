@@ -136,6 +136,21 @@ textarea:focus-visible {
   white-space: nowrap;
 }
 
+.follow-up-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.follow-up-brand img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 10px;
+  border: 1px solid #bae6fd;
+  background: #fff;
+}
+
 @media (max-width: 700px) {
   .official-header {
     padding: 16px !important;

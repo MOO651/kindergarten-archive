@@ -77,8 +77,12 @@ export default function Home() {
               onChange={(e) => setSelectedYear(e.target.value)}
               style={{ background: 'transparent', color: '#1e293b', border: 'none', outline: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: '700' }}
             >
+              <option value="2028">عام 2028</option>
+              <option value="2027">عام 2027</option>
               <option value="2026">عام 2026</option>
               <option value="2025">عام 2025</option>
+              <option value="2024">عام 2024</option>
+              <option value="2023">عام 2023</option>
             </select>
           </div>
 
