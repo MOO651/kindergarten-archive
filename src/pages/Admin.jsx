@@ -58,7 +58,6 @@ export default function Admin() {
   const [isUploading, setIsUploading] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
 
-  // إدارة الأعوام الدراسية في الـ LocalStorage (تبدأ بالأعوام المعتادة)
   const [years, setYears] = useState(() => {
     const saved = localStorage.getItem('kindergarten_admin_years');
     if (saved) {
@@ -70,7 +69,6 @@ export default function Admin() {
   });
   const [newYear, setNewYear] = useState('');
 
-  // إدارة الأقسام
   const [sections, setSections] = useState(() => {
     const saved = localStorage.getItem('kindergarten_admin_sections');
     if (saved) {
@@ -105,7 +103,6 @@ export default function Admin() {
     setPassword('');
   };
 
-  // إضافة عام دراسي
   const handleAddYear = (e) => {
     e.preventDefault();
     const trimmedYear = newYear.trim();
@@ -124,10 +121,9 @@ export default function Admin() {
     setNotice(`تم إضافة عام ${trimmedYear} بنجاح.`);
   };
 
-  // حذف عام دراسي (مثل 2023 أو 2024)
   const handleDeleteYear = (yr) => {
     if (years.length <= 1) {
-      setNotice('يجب أن يبقى عام دراسي واحد على الأقل في النظام.');
+      setNotice('يجب أن يبقى عام دراسي واحد على الأقل.');
       return;
     }
     if (window.confirm(`هل أنت متأكد من حذف عام ${yr}؟`)) {
@@ -138,7 +134,6 @@ export default function Admin() {
     }
   };
 
-  // إضافة قسم جديد
   const handleAddSection = (e) => {
     e.preventDefault();
     if (!newSectionTitle.trim()) {
@@ -159,7 +154,6 @@ export default function Admin() {
     setNotice(`تم إضافة القسم "${newSec.title}" بنجاح.`);
   };
 
-  // حذف قسم
   const handleDeleteSection = (secId) => {
     if (window.confirm('هل أنت متأكد من حذف هذا القسم نهائياً؟')) {
       const updatedSections = sections.filter(s => s.id !== secId);
@@ -356,11 +350,11 @@ export default function Admin() {
 
         {notice && <div role="status" style={{ background: '#ecfdf5', color: '#047857', padding: '12px 16px', borderRadius: '12px', marginBottom: '20px', fontSize: '13px', fontWeight: '700', border: '1px solid #a7f3d0' }}>{notice}</div>}
 
-        {/* 1. قسم إدارة الأعوام الدراسية (لحذف 2023 و 2024 أو إضافة أي عام) */}
+        {/* 1. قسم إدارة الأعوام الدراسية */}
         <div className="official-card" style={{ padding: '30px', marginBottom: '30px', border: '2px solid #2563eb' }}>
           <h2 style={{ fontSize: '16px', fontWeight: '900', color: '#0f172a', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Calendar style={{ width: '18px', height: '18px', color: '#2563eb' }} />
-            <span>إدارة الأعوام الدراسية (احذف أو أضف الأعوام من هنا)</span>
+            <span>إدارة الأعوام الدراسية (حذف أو إضافة الأعوام)</span>
           </h2>
           <form onSubmit={handleAddYear} style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
             <input 
@@ -506,7 +500,7 @@ export default function Admin() {
                     <h3 style={{ fontSize: '13px', fontWeight: '800', color: '#2563eb', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid #e2e8f0' }}>
                       السجل / القسم: {targetSec ? targetSec.title : `رقم (${secId})`}
                     </h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div style={{ data: 'list', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                       {filesList.map(file => (
                         <div key={file.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#ffffff', border: '1px solid #e2e8f0', padding: '12px 16px', borderRadius: '10px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
