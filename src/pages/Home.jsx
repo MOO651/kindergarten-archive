@@ -1,38 +1,38 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, ClipboardCheck, Lock, Search, ChevronRight, FileText } from 'lucide-react';
+import { Calendar, ClipboardCheck, Lock, Search, ChevronRight } from 'lucide-react';
 
 const defaultSections = [
-  { id: '1', title: 'الدعم الموحد', category: 'الأنظمة', bg: '#e0f2fe', color: '#0284c7' },
-  { id: '2', title: 'التقويم المدرسي', category: 'التنظيم', bg: '#d1fae5', color: '#059669' },
-  { id: '3', title: 'منصة عين الاثرائية', category: 'المنصات', bg: '#fef3c7', color: '#d97706' },
-  { id: '4', title: 'حضوري', category: 'الحضور', bg: '#ccfbf1', color: '#0d9488' },
-  { id: '5', title: 'نظام نور', category: 'الأنظمة', bg: '#e0e7ff', color: '#4f46e5' },
-  { id: '6', title: 'الصحة المدرسية', category: 'الرعاية', bg: '#fce7f3', color: '#db2777' },
-  { id: '7', title: 'التواصل', category: 'العلاقات', bg: '#dbeafe', color: '#2563eb' },
-  { id: '8', title: 'التقارير والاحصائيات', category: 'التوثيق', bg: '#ede9fe', color: '#7c3aed' },
-  { id: '9', title: 'البرامج والأنشطة', category: 'الأنشطة', bg: '#ffedd5', color: '#ea580c' },
-  { id: '10', title: 'الانضباط المدرسي', category: 'التوجيه', bg: '#cffafe', color: '#0891b2' },
-  { id: '11', title: 'حماية الطفل', category: 'الطفولة', bg: '#ecfccb', color: '#65a30d' },
-  { id: '12', title: 'الشراكة', category: 'المجتمع', bg: '#fef9c3', color: '#ca8a04' },
-  { id: '13', title: 'النشرات والتبليغات', category: 'الإعلام', bg: '#ffe4e6', color: '#e11d48' },
-  { id: '14', title: 'المبادرات و التطوع', category: 'خدمة المجتمع', bg: '#fef3c7', color: '#b45309' },
-  { id: '15', title: 'منصة روضتي', category: 'المنصات', bg: '#d1fae5', color: '#047857' },
-  { id: '16', title: 'الانشطة الحركية واللعب في الخارج', category: 'الحركة', bg: '#dcfce7', color: '#16a34a' },
-  { id: '17', title: 'التطوير المهني', category: 'التدريب', bg: '#e0f2fe', color: '#0284c7' },
-  { id: '18', title: 'السلوك الوظيفي', category: 'الإدارة', bg: '#e0e7ff', color: '#4338ca' },
-  { id: '19', title: 'المجالس واللجان', category: 'الحوكمة', bg: '#f3e8ff', color: '#9333ea' },
-  { id: '20', title: 'الامن والسلامة البيئية', category: 'السلامة', bg: '#d1fae5', color: '#059669' },
-  { id: '21', title: 'الخطة التشغيلية', category: 'التخطيط', bg: '#f1f5f9', color: '#475569' },
-  { id: '22', title: 'المسابقات', category: 'التحفيز', bg: '#fef3c7', color: '#d97706' },
-  { id: '23', title: 'العقد السلوكي', category: 'الإرشاد', bg: '#e0f2fe', color: '#0284c7' },
-  { id: '24', title: 'اداء المتعلمين', category: 'التقييم', bg: '#dcfce7', color: '#15803d' },
-  { id: '25', title: 'المنهج الوطني', category: 'المناهج', bg: '#fef3c7', color: '#b45309' },
-  { id: '26', title: 'الخطط الأسبوعية التعليمية', category: 'الخطط', bg: '#dbeafe', color: '#2563eb' },
-  { id: '27', title: 'الخطط الأسبوعية للبرامج والأنشطة', category: 'الخطط', bg: '#ffedd5', color: '#ea580c' },
-  { id: '28', title: 'اللوائح والأنظمة', category: 'الأنظمة', bg: '#e0f2fe', color: '#0284c7' },
-  { id: '29', title: 'الأدلة', category: 'المراجع', bg: '#ecfccb', color: '#65a30d' },
-  { id: '30', title: 'متابعة السجلات', category: 'المتابعة', bg: '#e0f2fe', color: '#0369a1', isFollowUp: true },
+  { id: '1', title: 'الدعم الموحد', category: 'الأنظمة', img: '/الدعم الموحد.jpg', bg: '#e0f2fe', color: '#0284c7' },
+  { id: '2', title: 'التقويم المدرسي', category: 'التنظيم', img: '/school-logo.svg', bg: '#d1fae5', color: '#059669' },
+  { id: '3', title: 'منصة عين الاثرائية', category: 'المنصات', img: '/عين.jpg', bg: '#fef3c7', color: '#d97706' },
+  { id: '4', title: 'حضوري', category: 'الحضور', img: '/حضوري.png', bg: '#ccfbf1', color: '#0d9488' },
+  { id: '5', title: 'نظام نور', category: 'الأنظمة', img: '/نور.jpg', bg: '#e0e7ff', color: '#4f46e5' },
+  { id: '6', title: 'الصحة المدرسية', category: 'الرعاية', img: '/الصحه المدرسية.jpg', bg: '#fce7f3', color: '#db2777' },
+  { id: '7', title: 'التواصل', category: 'العلاقات', img: '/التواصل.png', bg: '#dbeafe', color: '#2563eb' },
+  { id: '8', title: 'التقارير والاحصائيات', category: 'التوثيق', img: '/التقارير والاحصائيات.png', bg: '#ede9fe', color: '#7c3aed' },
+  { id: '9', title: 'البرامج والأنشطة', category: 'الأنشطة', img: '/البرامج والانشطة.jpg', bg: '#ffedd5', color: '#ea580c' },
+  { id: '10', title: 'الانضباط المدرسي', category: 'التوجيه', img: '/الانضباط المدرسي.jpg', bg: '#cffafe', color: '#0891b2' },
+  { id: '11', title: 'حماية الطفل', category: 'الطفولة', img: '/حماية الطفل.png', bg: '#ecfccb', color: '#65a30d' },
+  { id: '12', title: 'الشراكة', category: 'المجتمع', img: '/الشراكه.jpg', bg: '#fef9c3', color: '#ca8a04' },
+  { id: '13', title: 'النشرات والتبليغات', category: 'الإعلام', img: '/النشرات والتبليغات.jpg', bg: '#ffe4e6', color: '#e11d48' },
+  { id: '14', title: 'المبادرات و التطوع', category: 'خدمة المجتمع', img: '/المبادرات و التطوع.png', bg: '#fef3c7', color: '#b45309' },
+  { id: '15', title: 'منصة روضتي', category: 'المنصات', img: '/منصة روضتي.png', bg: '#d1fae5', color: '#047857' },
+  { id: '16', title: 'الانشطة الحركية واللعب في الخارج', category: 'الحركة', img: '/الانشطة الحراكة واللعب في الخارج.jpg', bg: '#dcfce7', color: '#16a34a' },
+  { id: '17', title: 'التطوير المهني', category: 'التدريب', img: '/التطوير المهني.webp', bg: '#e0f2fe', color: '#0284c7' },
+  { id: '18', title: 'السلوك الوظيفي', category: 'الإدارة', img: '/السلوك التوظيفي.jpg', bg: '#e0e7ff', color: '#4338ca' },
+  { id: '19', title: 'المجالس واللجان', category: 'الحوكمة', img: '/المجالس و اللجان.png', bg: '#f3e8ff', color: '#9333ea' },
+  { id: '20', title: 'الامن والسلامة البيئية', category: 'السلامة', img: '/السلامة البيئية.jpg', bg: '#d1fae5', color: '#059669' },
+  { id: '21', title: 'الخطة التشغيلية', category: 'التخطيط', img: '/الخطة التشغلية.jpg', bg: '#f1f5f9', color: '#475569' },
+  { id: '22', title: 'المسابقات', category: 'التحفيز', img: '/المسابقات.png', bg: '#fef3c7', color: '#d97706' },
+  { id: '23', title: 'العقد السلوكي', category: 'الإرشاد', img: '/العقد السلوكي.jpg', bg: '#e0f2fe', color: '#0284c7' },
+  { id: '24', title: 'اداء المتعلمين', category: 'التقييم', img: '/اداء المتعلمين.jpg', bg: '#dcfce7', color: '#15803d' },
+  { id: '25', title: 'المنهج الوطني', category: 'المناهج', img: '/المنهج الوطني.jpg', bg: '#fef3c7', color: '#b45309' },
+  { id: '26', title: 'الخطط الأسبوعية التعليمية', category: 'الخطط', img: '/school-logo.svg', bg: '#dbeafe', color: '#2563eb' },
+  { id: '27', title: 'الخطط الأسبوعية للبرامج والأنشطة', category: 'الخطط', img: '/school-logo.svg', bg: '#ffedd5', color: '#ea580c' },
+  { id: '28', title: 'اللوائح والأنظمة', category: 'الأنظمة', img: '/ministry-official.jpg', bg: '#e0f2fe', color: '#0284c7' },
+  { id: '29', title: 'الأدلة', category: 'المراجع', img: '/school-logo.svg', bg: '#ecfccb', color: '#65a30d' },
+  { id: '30', title: 'متابعة السجلات', category: 'المتابعة', img: '/ministry-logo.svg', bg: '#e0f2fe', color: '#0369a1', isFollowUp: true },
 ];
 
 export default function Home() {
@@ -81,8 +81,8 @@ export default function Home() {
       <header className="home-header" style={{ padding: '16px 35px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 50, background: '#ffffff', borderBottom: '2px solid #e7dfd5' }}>
         <div className="brand-group" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <div className="brand-logos" aria-label="شعار وزارة التعليم وشعار روضة آل مشول" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <span className="brand-logo ministry-logo-frame" style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0' }}><img src="/ministry-logo.svg" alt="شعار وزارة التعليم" style={{ width: '30px', height: '30px', objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; }} /></span>
-            <span className="brand-logo school-logo-frame" style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0' }}><img src="/school-logo.svg" alt="شعار روضة آل مشول" style={{ width: '30px', height: '30px', objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; }} /></span>
+            <span className="brand-logo ministry-logo-frame"><img src="/ministry-logo.svg" alt="شعار وزارة التعليم" style={{ width: '35px', height: '35px', objectFit: 'contain' }} /></span>
+            <span className="brand-logo school-logo-frame"><img src="/school-logo.svg" alt="شعار روضة آل مشول" style={{ width: '35px', height: '35px', objectFit: 'contain' }} /></span>
           </div>
           <div className="brand-copy">
             <span className="ministry-label" style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: '700' }}>وزارة التعليم</span>
@@ -177,11 +177,14 @@ export default function Home() {
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', background: sec.bg || '#e0f2fe', padding: '12px 14px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.02)' }}>
                   {sec.isFollowUp ? (
-                    <ClipboardCheck style={{ width: '32px', height: '32px', color: sec.color || '#0369a1' }} />
+                    <ClipboardCheck style={{ width: '38px', height: '38px', color: sec.color || '#0369a1' }} />
                   ) : (
-                    <div style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: '8px', color: sec.color || '#2563eb' }}>
-                      <FileText style={{ width: '20px', height: '20px' }} />
-                    </div>
+                    <img 
+                      src={sec.img || '/school-logo.svg'} 
+                      alt={sec.title} 
+                      style={{ width: '38px', height: '38px', objectFit: 'contain', borderRadius: '6px' }} 
+                      onError={(e) => { e.target.src = '/school-logo.svg'; }} 
+                    />
                   )}
                   <span style={{ fontSize: '10px', color: '#475569', background: '#ffffff', padding: '3px 8px', borderRadius: '6px', fontWeight: '700', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                     {sec.category}
@@ -191,9 +194,9 @@ export default function Home() {
                 <h3 style={{ fontSize: '14px', fontWeight: '800', color: '#0f172a', lineHeight: '1.4' }}>{sec.title}</h3>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', paddingTop: '10px', borderTop: '1px solid #f1f5f9', fontSize: '11px', color: '#2563eb', fontWeight: '800' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', paddingTop: '10px', borderTop: '1px solid #f1f5f9', fontSize: '11px', color: '#000000', fontWeight: '800' }}>
                 <span>استعراض السجل</span>
-                <ChevronRight style={{ width: '14px', height: '14px', transform: 'rotate(180deg)' }} />
+                <ChevronRight style={{ width: '14px', height: '14px' }} />
               </div>
             </div>
           ))}
