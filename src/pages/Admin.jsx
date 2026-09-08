@@ -58,7 +58,7 @@ export default function Admin() {
   const [isUploading, setIsUploading] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
 
-  // جلب أو تهيئة الأعوام الدراسية في LocalStorage
+  // إدارة الأعوام الدراسية في الـ LocalStorage (تبدأ بالأعوام المعتادة)
   const [years, setYears] = useState(() => {
     const saved = localStorage.getItem('kindergarten_admin_years');
     if (saved) {
@@ -70,7 +70,7 @@ export default function Admin() {
   });
   const [newYear, setNewYear] = useState('');
 
-  // جلب أو تهيئة الأقسام في LocalStorage
+  // إدارة الأقسام
   const [sections, setSections] = useState(() => {
     const saved = localStorage.getItem('kindergarten_admin_sections');
     if (saved) {
@@ -121,13 +121,13 @@ export default function Admin() {
     setYears(updatedYears);
     localStorage.setItem('kindergarten_admin_years', JSON.stringify(updatedYears));
     setNewYear('');
-    setNotice(`تم إضافة عام ${trimmedYear} بنجاح وتحديث القائمة الرئيسية.`);
+    setNotice(`تم إضافة عام ${trimmedYear} بنجاح.`);
   };
 
-  // حذف عام دراسي
+  // حذف عام دراسي (مثل 2023 أو 2024)
   const handleDeleteYear = (yr) => {
     if (years.length <= 1) {
-      setNotice('يجب أن يبقى عام دراسي واحد على الأقل.');
+      setNotice('يجب أن يبقى عام دراسي واحد على الأقل في النظام.');
       return;
     }
     if (window.confirm(`هل أنت متأكد من حذف عام ${yr}؟`)) {
@@ -356,11 +356,11 @@ export default function Admin() {
 
         {notice && <div role="status" style={{ background: '#ecfdf5', color: '#047857', padding: '12px 16px', borderRadius: '12px', marginBottom: '20px', fontSize: '13px', fontWeight: '700', border: '1px solid #a7f3d0' }}>{notice}</div>}
 
-        {/* 1. قسم إدارة الأعوام الدراسية (مباشرة بعد الهيدر لضمان ظهوره) */}
+        {/* 1. قسم إدارة الأعوام الدراسية (لحذف 2023 و 2024 أو إضافة أي عام) */}
         <div className="official-card" style={{ padding: '30px', marginBottom: '30px', border: '2px solid #2563eb' }}>
           <h2 style={{ fontSize: '16px', fontWeight: '900', color: '#0f172a', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Calendar style={{ width: '18px', height: '18px', color: '#2563eb' }} />
-            <span>إدارة الأعوام الدراسية (تحديث القائمة العلوية للصفحة الرئيسية)</span>
+            <span>إدارة الأعوام الدراسية (احذف أو أضف الأعوام من هنا)</span>
           </h2>
           <form onSubmit={handleAddYear} style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
             <input 
@@ -378,7 +378,7 @@ export default function Admin() {
             {years.map(yr => (
               <span key={yr} style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 عام {yr}
-                <button type="button" onClick={() => handleDeleteYear(yr)} style={{ background: 'transparent', border: 'none', color: '#dc2626', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>×</button>
+                <button type="button" onClick={() => handleDeleteYear(yr)} style={{ background: 'transparent', border: 'none', color: '#dc2626', cursor: 'pointer', fontWeight: 'bold', fontSize: '15px', padding: '0 4px' }} title={`حذف عام ${yr}`}>×</button>
               </span>
             ))}
           </div>
