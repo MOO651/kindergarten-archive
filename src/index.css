@@ -52,8 +52,9 @@ textarea:focus-visible {
 
 .brand-logos {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   padding-left: 14px;
   border-left: 1px solid #e2e8f0;
 }
@@ -71,11 +72,13 @@ textarea:focus-visible {
 .ministry-logo-frame,
 .school-logo-frame {
   position: relative;
-  flex: 0 0 54px;
+  flex: 0 0 48px;
   overflow: hidden;
 }
 
 .ministry-logo-frame {
+  width: 54px;
+  height: 48px;
   border-color: #b7e4d8;
 }
 
@@ -98,6 +101,11 @@ textarea:focus-visible {
   object-fit: contain;
   border-color: #fbcfe8;
   box-shadow: 0 2px 8px rgba(209, 25, 127, 0.12);
+}
+
+.school-logo-frame {
+  width: 54px;
+  height: 54px;
 }
 
 .brand-copy {
@@ -169,6 +177,16 @@ textarea:focus-visible {
   .ministry-logo-frame,
   .school-logo-frame {
     flex-basis: 44px;
+  }
+
+  .ministry-logo-frame {
+    width: 44px;
+    height: 40px;
+  }
+
+  .school-logo-frame {
+    width: 44px;
+    height: 44px;
   }
 
   .ministry-logo {
