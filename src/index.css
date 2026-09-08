@@ -61,20 +61,41 @@ textarea:focus-visible {
 .brand-logo {
   width: 54px;
   height: 54px;
-  object-fit: cover;
   border-radius: 12px;
   border: 1px solid #dbeafe;
   background: #fff;
+  display: block;
+  overflow: hidden;
+}
+
+.ministry-logo-frame,
+.school-logo-frame {
+  position: relative;
+  flex: 0 0 54px;
+  overflow: hidden;
+}
+
+.ministry-logo-frame {
+  border-color: #b7e4d8;
 }
 
 .ministry-logo {
-  width: 44px;
-  height: 44px;
-  object-fit: contain;
-  padding: 4px;
+  width: 126px;
+  height: 88px;
+  max-width: none;
+  border: 0;
+  border-radius: 0;
+  object-fit: cover;
+  object-position: center;
+  transform: translate(-36px, -17px);
 }
 
 .school-logo {
+  width: 54px;
+  height: 54px;
+  border: 0;
+  border-radius: 0;
+  object-fit: contain;
   border-color: #fbcfe8;
   box-shadow: 0 2px 8px rgba(209, 25, 127, 0.12);
 }
@@ -145,9 +166,15 @@ textarea:focus-visible {
     height: 44px;
   }
 
+  .ministry-logo-frame,
+  .school-logo-frame {
+    flex-basis: 44px;
+  }
+
   .ministry-logo {
-    width: 36px;
-    height: 36px;
+    width: 104px;
+    height: 72px;
+    transform: translate(-30px, -14px);
   }
 
   .home-header > div:last-child {
