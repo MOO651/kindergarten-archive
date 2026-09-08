@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Upload, Trash2, Lock, FileText, ShieldCheck, Download, Database } from 'lucide-react';
+import { ArrowRight, Upload, Trash2, Lock, FileText, ShieldCheck, Download, Database, FolderPlus, Calendar } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
 import { deleteFile, downloadFile, getAllFiles, makeFileRecord, saveFile, updateFile } from '../storage';
 
@@ -10,6 +10,40 @@ const fileToDataUrl = async (file) => new Promise((resolve, reject) => {
   reader.onerror = () => reject(reader.error);
   reader.readAsDataURL(file);
 });
+
+// الأقسام الافتراضية الـ 29 + قسم المتابعة الأساسي
+const defaultSections = [
+  { id: '1', title: 'الدعم الموحد', category: 'الأنظمة' },
+  { id: '2', title: 'التقويم المدرسي', category: 'التنظيم' },
+  { id: '3', title: 'منصة عين الاثرائية', category: 'المنصات' },
+  { id: '4', title: 'حضوري', category: 'الحضور' },
+  { id: '5', title: 'نظام نور', category: 'الأنظمة' },
+  { id: '6', title: 'الصحة المدرسية', category: 'الرعاية' },
+  { id: '7', title: 'التواصل', category: 'العلاقات' },
+  { id: '8', title: 'التقارير والاحصائيات', category: 'التوثيق' },
+  { id: '9', title: 'البرامج والأنشطة', category: 'الأنشطة' },
+  { id: '10', title: 'الانضباط المدرسي', category: 'التوجيه' },
+  { id: '11', title: 'حماية الطفل', category: 'الطفولة' },
+  { id: '12', title: 'الشراكة', category: 'المجتمع' },
+  { id: '13', title: 'النشرات والتبليغات', category: 'الإعلام' },
+  { id: '14', title: 'المبادرات و التطوع', category: 'خدمة المجتمع' },
+  { id: '15', title: 'منصة روضتي', category: 'المنصات' },
+  { id: '16', title: 'الانشطة الحركية واللعب في الخارج', category: 'الحركة' },
+  { id: '17', title: 'التطوير المهني', category: 'التدريب' },
+  { id: '18', title: 'السلوك الوظيفي', category: 'الإدارة' },
+  { id: '19', title: 'المجالس واللجان', category: 'الحوكمة' },
+  { id: '20', title: 'الامن والسلامة البيئية', category: 'السلامة' },
+  { id: '21', title: 'الخطة التشغيلية', category: 'التخطيط' },
+  { id: '22', title: 'المسابقات', category: 'التحفيز' },
+  { id: '23', title: 'العقد السلوكي', category: 'الإرشاد' },
+  { id: '24', title: 'اداء المتعلمين', category: 'التقييم' },
+  { id: '25', title: 'المنهج الوطني', category: 'المناهج' },
+  { id: '26', title: 'الخطط الأسبوعية التعليمية', category: 'الخطط' },
+  { id: '27', title: 'الخطط الأسبوعية للبرامج والأنشطة', category: 'الخطط' },
+  { id: '28', title: 'اللوائح والأنظمة', category: 'الأنظمة' },
+  { id: '29', title: 'الأدلة', category: 'المراجع' },
+  { id: '30', title: 'متابعة السجلات', category: 'المتابعة', isFollowUp: true }
+];
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -25,11 +59,28 @@ export default function Admin() {
   const [isUploading, setIsUploading] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
 
+  // إدارة الأعوام الدراسية وتخزينها في الـ LocalStorage
+  const [years, setYears] = useState(() => {
+    const saved = localStorage.getItem('kindergarten_admin_years');
+    return saved ? JSON.parse(saved) : ['2028', '2027', '2026', '2025', '2024', '2023'];
+  });
+  const [newYear, setNewYear] = useState('');
+
+  // إدارة الأقسام وتخزينها في الـ LocalStorage
+  const [sections, setSections] = useState(() => {
+    const saved = localStorage.getItem('kindergarten_admin_sections');
+    return saved ? JSON.parse(saved) : defaultSections;
+  });
+  const [newSectionTitle, setNewSectionTitle] = useState('');
+  const [newSectionCategory, setNewSectionCategory] = useState('');
+
   useEffect(() => {
+    localStorage.setItem('kindergarten_admin_sections', JSON.stringify(sections));
+    localStorage.setItem('kindergarten_admin_years', JSON.stringify(years));
     getAllFiles()
       .then(setAllFiles)
       .catch(() => setNotice('تعذر قراءة الملفات المخزنة.'));
-  }, []);
+  }, [sections, years]);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -46,6 +97,65 @@ export default function Admin() {
     setPassword('');
   };
 
+  // إضافة عام دراسي جديد
+  const handleAddYear = (e) => {
+    e.preventDefault();
+    if (!newYear.trim()) return;
+    if (years.includes(newYear.trim())) {
+      setNotice('هذا العام موجود مسبقاً.');
+      return;
+    }
+    const updatedYears = [newYear.trim(), ...years];
+    setYears(updatedYears);
+    setNewYear('');
+    setNotice('تم إضافة العام الدراسي وتحديثه في القائمة العلوية الرئيسية بنجاح.');
+  };
+
+  // حذف عام دراسي
+  const handleDeleteYear = (yr) => {
+    if (years.length <= 1) {
+      setNotice('يجب أن يبقى عام دراسي واحد على الأقل.');
+      return;
+    }
+    if (window.confirm(`هل أنت متأكد من حذف عام ${yr}؟`)) {
+      const updatedYears = years.filter(y => y !== yr);
+      setYears(updatedYears);
+      setNotice('تم حذف العام الدراسي بنجاح.');
+    }
+  };
+
+  // إضافة قسم جديد
+  const handleAddSection = (e) => {
+    e.preventDefault();
+    if (!newSectionTitle.trim()) {
+      setNotice('يرجى كتابة اسم القسم الجديد.');
+      return;
+    }
+    const newId = String(Date.now());
+    const newSec = {
+      id: newId,
+      title: newSectionTitle.trim(),
+      category: newSectionCategory.trim() || 'عام',
+      bg: '#e0f2fe',
+      color: '#0284c7',
+      img: '/school-logo.svg'
+    };
+    const updatedSections = [...sections, newSec];
+    setSections(updatedSections);
+    setNewSectionTitle('');
+    setNewSectionCategory('');
+    setNotice(`تم إضافة القسم "${newSec.title}" بنجاح.`);
+  };
+
+  // حذف قسم
+  const handleDeleteSection = (secId) => {
+    if (window.confirm('هل أنت متأكد من حذف هذا القسم نهائياً؟')) {
+      const updatedSections = sections.filter(s => s.id !== secId);
+      setSections(updatedSections);
+      setNotice('تم حذف القسم بنجاح.');
+    }
+  };
+
   const handleUploadSubmit = async (e) => {
     e.preventDefault();
     if (!selectedFile) {
@@ -58,11 +168,11 @@ export default function Admin() {
       const originalSize = selectedFile.size;
       const uploadFile = selectedFile.type.startsWith('image/')
         ? await imageCompression(selectedFile, {
-          maxSizeMB: 1.5,
-          maxWidthOrHeight: 2400,
-          initialQuality: 0.78,
-          useWebWorker: true,
-        })
+            maxSizeMB: 1.5,
+            maxWidthOrHeight: 2400,
+            initialQuality: 0.78,
+            useWebWorker: true,
+          })
         : selectedFile;
       const newFile = makeFileRecord(uploadFile, selectedSection, description.trim());
       await saveFile(newFile);
@@ -218,8 +328,8 @@ export default function Admin() {
               <ArrowRight style={{ width: '18px', height: '18px', color: '#2563eb' }} />
             </button>
             <div>
-              <span style={{ fontSize: '11px', color: '#2563eb', fontWeight: '700' }}>لوحة الإدارة والتحكم</span>
-              <h1 style={{ fontSize: '18px', fontWeight: '900', color: '#0f172a' }}>إدارة مستندات وسجلات الروضة</h1>
+              <span style={{ fontSize: '11px', color: '#2563eb', fontWeight: '700' }}>لوحة الإدارة والتحكم الشاملة</span>
+              <h1 style={{ fontSize: '18px', fontWeight: '900', color: '#0f172a' }}>إدارة الأقسام، الأعوام، والمستندات</h1>
             </div>
           </div>
 
@@ -231,7 +341,79 @@ export default function Admin() {
           </button>
         </div>
 
-        {/* قسم رفع ملف حقيقي */}
+        {notice && <div role="status" style={{ background: '#ecfdf5', color: '#047857', padding: '12px 16px', borderRadius: '12px', marginBottom: '20px', fontSize: '13px', fontWeight: '700', border: '1px solid #a7f3d0' }}>{notice}</div>}
+
+        {/* 1. قسم إدارة الأعوام الدراسية (تحديث القائمة العلوية في الهوم) */}
+        <div className="official-card" style={{ padding: '30px', marginBottom: '30px' }}>
+          <h2 style={{ fontSize: '16px', fontWeight: '900', color: '#0f172a', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Calendar style={{ width: '18px', height: '18px', color: '#2563eb' }} />
+            <span>إدارة الأعوام الدراسية (تظهر في أعلى الصفحة الرئيسية)</span>
+          </h2>
+          <form onSubmit={handleAddYear} style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+            <input 
+              type="text" 
+              placeholder="أضف عام جديد (مثال: 2029)..." 
+              value={newYear}
+              onChange={(e) => setNewYear(e.target.value)}
+              style={{ flex: 1, padding: '10px 14px', borderRadius: '10px', border: '1px solid #cbd5e1', outline: 'none', fontSize: '13px' }}
+            />
+            <button type="submit" style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '10px', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>
+              إضافة عام
+            </button>
+          </form>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            {years.map(yr => (
+              <span key={yr} style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                عام {yr}
+                <button type="button" onClick={() => handleDeleteYear(yr)} style={{ background: 'transparent', border: 'none', color: '#dc2626', cursor: 'pointer', fontWeight: 'bold' }}>×</button>
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* 2. قسم إدارة الأقسام (إضافة وحذف) */}
+        <div className="official-card" style={{ padding: '30px', marginBottom: '30px' }}>
+          <h2 style={{ fontSize: '16px', fontWeight: '900', color: '#0f172a', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <FolderPlus style={{ width: '18px', height: '18px', color: '#059669' }} />
+            <span>إدارة الأقسام (إضافة أو حذف قسم)</span>
+          </h2>
+          <form onSubmit={handleAddSection} style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+            <input 
+              type="text" 
+              placeholder="اسم القسم الجديد (مثال: الأنشطة الخاصة)..." 
+              value={newSectionTitle}
+              onChange={(e) => setNewSectionTitle(e.target.value)}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #cbd5e1', outline: 'none', fontSize: '13px' }}
+            />
+            <input 
+              type="text" 
+              placeholder="التصنيف (مثال: الأنشطة)..." 
+              value={newSectionCategory}
+              onChange={(e) => setNewSectionCategory(e.target.value)}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #cbd5e1', outline: 'none', fontSize: '13px' }}
+            />
+            <button type="submit" style={{ background: '#059669', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '10px', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>
+              إنشاء وإضافة القسم
+            </button>
+          </form>
+
+          <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '10px', background: '#f8fafc' }}>
+            {sections.map(sec => (
+              <div key={sec.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', borderBottom: '1px solid #e2e8f0' }}>
+                <span style={{ fontSize: '13px', fontWeight: '700' }}>({sec.id}) {sec.title} <small style={{ color: '#64748b' }}>[{sec.category}]</small></span>
+                <button 
+                  type="button" 
+                  onClick={() => handleDeleteSection(sec.id)} 
+                  style={{ background: '#fee2e2', color: '#dc2626', border: 'none', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
+                >
+                  حذف
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 3. قسم رفع ملف حقيقي */}
         <div className="official-card" style={{ padding: '30px', marginBottom: '30px' }}>
           <h2 style={{ fontSize: '16px', fontWeight: '900', color: '#0f172a', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Upload style={{ width: '18px', height: '18px', color: '#2563eb' }} />
@@ -239,7 +421,6 @@ export default function Admin() {
           </h2>
 
           <form onSubmit={handleUploadSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {notice && <div role="status" style={{ background: '#ecfdf5', color: '#047857', padding: '10px 14px', borderRadius: '10px', fontSize: '13px', fontWeight: '700' }}>{notice}</div>}
             <div>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: '#475569', marginBottom: '8px' }}>اختر القسم المستهدف:</label>
               <select 
@@ -247,18 +428,9 @@ export default function Admin() {
                 onChange={(e) => setSelectedSection(e.target.value)}
                 style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', border: '1px solid #cbd5e1', outline: 'none', fontSize: '13px', fontWeight: '600', background: '#ffffff', fontFamily: 'inherit' }}
               >
-                {[...Array(29)].map((_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    القسم رقم ({i + 1}) - {
-                      [
-                        'الدعم الموحد', 'التقويم المدرسي', 'منصة عين الاثرائية', 'حضوري', 'نظام نور',
-                        'الصحة المدرسية', 'التواصل', 'التقارير والاحصائيات', 'البرامج والأنشطة', 'الانضباط المدرسي',
-                        'حماية الطفل', 'الشراكة', 'النشرات والتبليغات', 'المبادرات و التطوع', 'منصة روضتي',
-                        'الانشطة الحركية واللعب في الخارج', 'التطوير المهني', 'السلوك الوظيفي', 'المجالس واللجان', 'الامن والسلامة البيئية',
-                        'الخطة التشغيلية', 'المسابقات', 'العقد السلوكي', 'اداء المتعلمين', 'المنهج الوطني',
-                        'الخطط الأسبوعية التعليمية', 'الخطط الأسبوعية للبرامج والأنشطة', 'اللوائح والأنظمة', 'الأدلة'
-                      ][i]
-                    }
+                {sections.map((sec) => (
+                  <option key={sec.id} value={sec.id}>
+                    القسم ({sec.title})
                   </option>
                 ))}
               </select>
@@ -274,8 +446,8 @@ export default function Admin() {
                 onChange={(e) => setSelectedFile(e.target.files[0])}
                 style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px dashed #94a3b8', background: '#f8fafc', cursor: 'pointer', fontSize: '13px', fontFamily: 'inherit' }}
               />
-                <span style={{ fontSize: '11px', color: '#64748b', marginTop: '6px', display: 'block', fontWeight: '600' }}>يمكنك اختيار أي نوع ملف وبأي حجم تسمح به مساحة جهازك.</span>
-                {selectedFile && <div role="status" style={{ background: '#eff6ff', color: '#1d4ed8', padding: '10px 12px', borderRadius: '9px', marginTop: '10px', fontSize: '12px', fontWeight: '700' }}>الملف المحدد: {selectedFile.name} ({(selectedFile.size / (1024 * 1024)).toFixed(2)} ميجابايت)</div>}
+              <span style={{ fontSize: '11px', color: '#64748b', marginTop: '6px', display: 'block', fontWeight: '600' }}>يمكنك اختيار أي نوع ملف وبأي حجم تسمح به مساحة جهازك.</span>
+              {selectedFile && <div role="status" style={{ background: '#eff6ff', color: '#1d4ed8', padding: '10px 12px', borderRadius: '9px', marginTop: '10px', fontSize: '12px', fontWeight: '700' }}>الملف المحدد: {selectedFile.name} ({(selectedFile.size / (1024 * 1024)).toFixed(2)} ميجابايت)</div>}
             </div>
 
             <div>
@@ -315,10 +487,11 @@ export default function Admin() {
             ) : (
               [...new Set(allFiles.map((file) => file.sectionId))].map((secId) => {
                 const filesList = allFiles.filter((file) => file.sectionId === secId);
+                const targetSec = sections.find(s => s.id === secId);
                 return (
                   <div key={secId} style={{ border: '1px solid #e2e8f0', padding: '16px', borderRadius: '14px', background: '#f8fafc' }}>
                     <h3 style={{ fontSize: '13px', fontWeight: '800', color: '#2563eb', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid #e2e8f0' }}>
-                      السجل / القسم رقم ({secId})
+                      السجل / القسم: {targetSec ? targetSec.title : `رقم (${secId})`}
                     </h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                       {filesList.map(file => (
