@@ -83,14 +83,14 @@ textarea:focus-visible {
 }
 
 .ministry-logo {
-  width: 126px;
-  height: 88px;
-  max-width: none;
+  width: 54px;
+  height: 48px;
   border: 0;
   border-radius: 0;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
-  transform: translate(-36px, -17px);
+  padding: 4px;
+  transform: none;
 }
 
 .school-logo {
@@ -190,9 +190,8 @@ textarea:focus-visible {
   }
 
   .ministry-logo {
-    width: 104px;
-    height: 72px;
-    transform: translate(-30px, -14px);
+    width: 44px;
+    height: 40px;
   }
 
   .home-header > div:last-child {
