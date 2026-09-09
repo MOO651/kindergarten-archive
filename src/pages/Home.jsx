@@ -64,7 +64,22 @@ export default function Home() {
 
   const [sections] = useState(() => {
     const saved = localStorage.getItem('kindergarten_admin_sections');
-    return saved ? JSON.parse(saved) : defaultSections;
+    if (!saved) return defaultSections;
+    try {
+      const parsed = JSON.parse(saved);
+      // دمج الأقسام المحفوظة مع الصور الأصلية لضمان عدم تلف أو توحيد اللوجوهات
+      return parsed.map(sec => {
+        const original = defaultSections.find(d => d.id === sec.id);
+        return {
+          ...sec,
+          img: sec.img && sec.img !== '/school-logo.svg' ? sec.img : (original ? original.img : '/school-logo.svg'),
+          bg: sec.bg || (original ? original.bg : '#e0f2fe'),
+          color: sec.color || (original ? original.color : '#0284c7')
+        };
+      });
+    } catch {
+      return defaultSections;
+    }
   });
 
   const filteredSections = sections.filter(sec => 
