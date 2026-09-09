@@ -67,7 +67,6 @@ export default function Home() {
     if (!saved) return defaultSections;
     try {
       const parsed = JSON.parse(saved);
-      // دمج الأقسام المحفوظة مع الصور الأصلية لضمان عدم تلف أو توحيد اللوجوهات
       return parsed.map(sec => {
         const original = defaultSections.find(d => d.id === sec.id);
         return {
@@ -95,12 +94,21 @@ export default function Home() {
       {/* الهيدر العلوي الرسمي */}
       <header className="home-header" style={{ padding: '16px 35px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 50, background: '#ffffff', borderBottom: '2px solid #e7dfd5' }}>
         <div className="brand-group" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <div className="brand-logos" aria-label="شعار وزارة التعليم وشعار روضة آل مشول" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          
+          {/* صور القيادة والشعارات الرسمية */}
+          <div className="brand-logos" aria-label="الشعارات وصور القيادة" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+            <img src="/founder.jpg" alt="المؤسس" style={{ width: '32px', height: '32px', objectFit: 'cover', borderRadius: '50%', border: '1px solid #cbd5e1' }} title="الملك المؤسس" onError={(e) => { e.target.style.display = 'none'; }} />
+            <img src="/king.jpg" alt="خادم الحرمين الشريفين" style={{ width: '32px', height: '32px', objectFit: 'cover', borderRadius: '50%', border: '1px solid #cbd5e1' }} title="الملك سلمان بن عبد العزيز" onError={(e) => { e.target.style.display = 'none'; }} />
+            <img src="/crown-prince.jpg" alt="ولي العهد" style={{ width: '32px', height: '32px', objectFit: 'cover', borderRadius: '50%', border: '1px solid #cbd5e1' }} title="الأمير محمد بن سلمان" onError={(e) => { e.target.style.display = 'none'; }} />
             <span className="brand-logo ministry-logo-frame"><img src="/ministry-logo.svg" alt="شعار وزارة التعليم" style={{ width: '35px', height: '35px', objectFit: 'contain' }} /></span>
             <span className="brand-logo school-logo-frame"><img src="/school-logo.svg" alt="شعار روضة آل مشول" style={{ width: '35px', height: '35px', objectFit: 'contain' }} /></span>
           </div>
+
           <div className="brand-copy">
-            <span className="ministry-label" style={{ display: 'block', fontSize: '11px', color: '#64748b', fontWeight: '700' }}>وزارة التعليم</span>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <span className="ministry-label" style={{ fontSize: '11px', color: '#64748b', fontWeight: '700' }}>وزارة التعليم</span>
+              <span style={{ fontSize: '10px', background: '#f1f5f9', color: '#0369a1', padding: '1px 6px', borderRadius: '4px', fontWeight: '800' }}>الرقم الوزاري: 71424</span>
+            </div>
             <span className="school-label" style={{ display: 'block', fontSize: '12px', color: '#0f172a', fontWeight: '800' }}>روضة آل مشول الحكومية</span>
             <h1 style={{ fontSize: '15px', fontWeight: '900', color: '#1e3a8a', margin: 0 }}>سجلات الروضة - أداء الروضة</h1>
           </div>
