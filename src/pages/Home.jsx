@@ -62,6 +62,7 @@ export default function Home() {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [selectedYear]);
 
+  // دمج الأسماء والتصنيفات فقط من التخزين المحلي، مع فرض قراءة الصور حصرياً من مصفوفة البابلك الأصلية لمنع أي تداخل
   const [sections] = useState(() => {
     const saved = localStorage.getItem('kindergarten_admin_sections');
     if (!saved) return defaultSections;
@@ -71,7 +72,7 @@ export default function Home() {
         const original = defaultSections.find(d => d.id === sec.id);
         return {
           ...sec,
-          img: sec.img && sec.img !== '/school-logo.svg' ? sec.img : (original ? original.img : '/school-logo.svg'),
+          img: original ? original.img : '/school-logo.svg',
           bg: sec.bg || (original ? original.bg : '#e0f2fe'),
           color: sec.color || (original ? original.color : '#0284c7')
         };
@@ -92,35 +93,49 @@ export default function Home() {
     <div className="home-shell" style={{ minHeight: '100vh', backgroundColor: '#fdfbf7', color: '#1e293b', direction: 'rtl' }}>
       
       {/* الهيدر العلوي الرسمي */}
-      <header className="home-header" style={{ padding: '16px 35px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 50, background: '#ffffff', borderBottom: '2px solid #e7dfd5' }}>
-        <div className="brand-group" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          
-          {/* صور القيادة والشعارات الرسمية */}
-          <div className="brand-logos" aria-label="الشعارات وصور القيادة" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-            <img src="/founder.jpg" alt="المؤسس" style={{ width: '32px', height: '32px', objectFit: 'cover', borderRadius: '50%', border: '1px solid #cbd5e1' }} title="الملك المؤسس" onError={(e) => { e.target.style.display = 'none'; }} />
-            <img src="/king.jpg" alt="خادم الحرمين الشريفين" style={{ width: '32px', height: '32px', objectFit: 'cover', borderRadius: '50%', border: '1px solid #cbd5e1' }} title="الملك سلمان بن عبد العزيز" onError={(e) => { e.target.style.display = 'none'; }} />
-            <img src="/crown-prince.jpg" alt="ولي العهد" style={{ width: '32px', height: '32px', objectFit: 'cover', borderRadius: '50%', border: '1px solid #cbd5e1' }} title="الأمير محمد بن سلمان" onError={(e) => { e.target.style.display = 'none'; }} />
+      <header className="home-header" style={{ padding: '14px 30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 50, background: '#ffffff', borderBottom: '2px solid #e7dfd5', flexWrap: 'wrap', gap: '15px' }}>
+        
+        {/* جهة اليمين: شعارات الوزارة والروضة واسم المدرسة */}
+        <div className="brand-group" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div className="brand-logos" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
             <span className="brand-logo ministry-logo-frame"><img src="/ministry-logo.svg" alt="شعار وزارة التعليم" style={{ width: '35px', height: '35px', objectFit: 'contain' }} /></span>
             <span className="brand-logo school-logo-frame"><img src="/school-logo.svg" alt="شعار روضة آل مشول" style={{ width: '35px', height: '35px', objectFit: 'contain' }} /></span>
           </div>
-
           <div className="brand-copy">
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-              <span className="ministry-label" style={{ fontSize: '11px', color: '#64748b', fontWeight: '700' }}>وزارة التعليم</span>
-              <span style={{ fontSize: '10px', background: '#f1f5f9', color: '#0369a1', padding: '1px 6px', borderRadius: '4px', fontWeight: '800' }}>الرقم الوزاري: 71424</span>
+            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+              <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700' }}>وزارة التعليم</span>
+              <span style={{ fontSize: '10px', background: '#f1f5f9', color: '#0369a1', padding: '1px 5px', borderRadius: '4px', fontWeight: '800' }}>الرقم الوزاري: 71424</span>
             </div>
-            <span className="school-label" style={{ display: 'block', fontSize: '12px', color: '#0f172a', fontWeight: '800' }}>روضة آل مشول الحكومية</span>
-            <h1 style={{ fontSize: '15px', fontWeight: '900', color: '#1e3a8a', margin: 0 }}>سجلات الروضة - أداء الروضة</h1>
+            <span style={{ display: 'block', fontSize: '12px', color: '#0f172a', fontWeight: '800' }}>روضة آل مشول الحكومية</span>
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-          <div style={{ background: '#f8fafc', padding: '6px 12px', borderRadius: '10px', border: '1px solid #cbd5e1', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Calendar style={{ width: '15px', height: '15px', color: '#0369a1' }} />
+        {/* المنتصف: واجهة فخمة لصور القيادة (المؤسس، الملك، ولي العهد) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#f8fafc', padding: '6px 16px', borderRadius: '25px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ textAlign: 'center' }}>
+              <img src="/founder.jpg" alt="الملك المؤسس" style={{ width: '34px', height: '34px', objectFit: 'cover', borderRadius: '50%', border: '2px solid #cbd5e1', display: 'block', margin: '0 auto' }} onError={(e) => { e.target.style.display = 'none'; }} />
+              <span style={{ fontSize: '9px', fontWeight: '700', color: '#475569' }}>المؤسس</span>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <img src="/king.jpg" alt="خادم الحرمين الشريفين" style={{ width: '34px', height: '34px', objectFit: 'cover', borderRadius: '50%', border: '2px solid #2563eb', display: 'block', margin: '0 auto' }} onError={(e) => { e.target.style.display = 'none'; }} />
+              <span style={{ fontSize: '9px', fontWeight: '700', color: '#1e3a8a' }}>الملك سلمان</span>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <img src="/crown-prince.jpg" alt="ولي العهد" style={{ width: '34px', height: '34px', objectFit: 'cover', borderRadius: '50%', border: '2px solid #059669', display: 'block', margin: '0 auto' }} onError={(e) => { e.target.style.display = 'none'; }} />
+              <span style={{ fontSize: '9px', fontWeight: '700', color: '#047857' }}>ولي العهد</span>
+            </div>
+          </div>
+        </div>
+
+        {/* جهة اليسار: اختيار السنة ولوحة التحكم */}
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <div style={{ background: '#f8fafc', padding: '6px 10px', borderRadius: '10px', border: '1px solid #cbd5e1', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Calendar style={{ width: '14px', height: '14px', color: '#0369a1' }} />
             <select 
               value={selectedYear} 
               onChange={(e) => setSelectedYear(e.target.value)}
-              style={{ background: 'transparent', color: '#1e293b', border: 'none', outline: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: '700', fontFamily: 'inherit' }}
+              style={{ background: 'transparent', color: '#1e293b', border: 'none', outline: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: '700', fontFamily: 'inherit' }}
             >
               {years.map(yr => (
                 <option key={yr} value={yr}>عام {yr}</option>
@@ -130,9 +145,9 @@ export default function Home() {
 
           <button 
             onClick={() => navigate('/admin')}
-            style={{ background: '#1e3a8a', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '700' }}
+            style={{ background: '#1e3a8a', color: '#fff', border: 'none', padding: '8px 14px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700' }}
           >
-            <Lock style={{ width: '13px', height: '13px', color: '#38bdf8' }} />
+            <Lock style={{ width: '12px', height: '12px', color: '#38bdf8' }} />
             <span>لوحة التحكم</span>
           </button>
         </div>
@@ -203,7 +218,7 @@ export default function Home() {
                     <ClipboardCheck style={{ width: '38px', height: '38px', color: sec.color || '#0369a1' }} />
                   ) : (
                     <img 
-                      src={sec.img || '/school-logo.svg'} 
+                      src={sec.img} 
                       alt={sec.title} 
                       style={{ width: '38px', height: '38px', objectFit: 'contain', borderRadius: '6px' }} 
                       onError={(e) => { e.target.src = '/school-logo.svg'; }} 
